@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://cardealer-pro-backend.onrender.com/api/:path*" }
+  ]
+}
