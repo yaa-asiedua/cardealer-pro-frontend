@@ -2,6 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* Default brand pair — the Admin theme, and what the (role-less) Login
+     screen shows. Overridden per role at runtime by lib/role-theme.ts via
+     AppShell; see tailwind.config.js for why these are variables. */
+  --color-primary: 20 33 61;
+  --color-action: 47 111 228;
+
+  /* Light theme (default) — see tailwind.config.js's comment for why these
+     four plus `card` are variables. Toggled by lib/theme.ts via a `dark`
+     class on <html>, persisted in localStorage. */
+  --color-surface: 248 250 252;
+  --color-border: 217 225 232;
+  --color-ink: 31 41 55;
+  --color-muted: 107 114 128;
+  --color-card: 255 255 255;
+}
+
+.dark {
+  --color-surface: 15 23 33;
+  --color-border: 51 65 85;
+  --color-ink: 226 232 240;
+  --color-muted: 148 163 184;
+  --color-card: 26 35 50;
+}
+
 body {
   @apply bg-surface text-ink antialiased;
 }
