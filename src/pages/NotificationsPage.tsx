@@ -1,20 +1,41 @@
-import { useCallback, useEffect, useState } from "react";
-import { Bell } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Bell, CheckCheck } from "lucide-react";
 import { api } from "../lib/api-client";
 import { formatDateTime } from "../lib/format";
+import { NOTIFICATION_CATEGORY_LABELS, notificationCategory } from "../lib/notification-helpers";
+import type { NotificationCategory } from "../lib/notification-helpers";
 import type { AppNotification, NotificationListResult } from "../types";
 
+const CATEGORIES: (NotificationCategory | "ALL")[] = [
+  "ALL",
+  "FOLLOWUP",
+  "APPLICATIONS",
+  "CUSTOMERS",
+  "PAYMENTS",
+  "SERVICE_JOBS",
+  "PARTS",
+  "SYSTEM",
+];
+
 export function NotificationsPage() {
-  const [result, setResult] = useState<NotificationListResult | null>(null);
-  const [page, setPage] = useState(1);
+  const [all, setAll] = useState<AppNotification[] | null>(null);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [category, setCategory] = useState<NotificationCategory | "ALL">("ALL");
   const [unreadOnly, setUnreadOnly] = useState(false);
 
+  // Category counts are derived client-side from a single fetch — the
+  // backend doesn't bucket by category (type is free-text, not an enum) —
+  // same "accurate up to the fetched page" tradeoff used elsewhere in this
+  // app (e.g. Inventory's aging check).
   const load = useCallback(() => {
     api
-      .get<NotificationListResult>(`/notifications?page=${page}&pageSize=20&unreadOnly=${unreadOnly}`)
-      .then(setResult)
+      .get<NotificationListResult>("/notifications?page=1&pageSize=100")
+      .then((res) => {
+        setAll(res.data);
+        setUnreadCount(res.unreadCount);
+      })
       .catch(() => undefined);
-  }, [page, unreadOnly]);
+  }, []);
 
   useEffect(() => {
     load();
@@ -31,37 +52,84 @@ export function NotificationsPage() {
     load();
   }
 
+  const counts = useMemo(() => {
+    const result: Record<NotificationCategory | "ALL", number> = {
+      ALL: all?.length ?? 0,
+      FOLLOWUP: 0,
+      APPLICATIONS: 0,
+      CUSTOMERS: 0,
+      PAYMENTS: 0,
+      SERVICE_JOBS: 0,
+      PARTS: 0,
+      SYSTEM: 0,
+    };
+    for (const n of all ?? []) result[notificationCategory(n.type)]++;
+    return result;
+  }, [all]);
+
+  const visible = useMemo(() => {
+    return (all ?? []).filter((n) => {
+      if (unreadOnly && n.isRead) return false;
+      if (category !== "ALL" && notificationCategory(n.type) !== category) return false;
+      return true;
+    });
+  }, [all, category, unreadOnly]);
+
   return (
-    <div className="mx-auto max-w-2xl">
-      <div className="mb-4 flex items-center justify-between">
-        <label className="flex items-center gap-2 text-sm text-ink">
-          <input
-            type="checkbox"
-            checked={unreadOnly}
-            onChange={(e) => {
-              setPage(1);
-              setUnreadOnly(e.target.checked);
-            }}
-            className="rounded border-border"
-          />
-          Unread only
-        </label>
-        {!!result?.unreadCount && (
-          <button type="button" onClick={handleMarkAllRead} className="text-sm font-medium text-action hover:underline">
-            Mark all read ({result.unreadCount})
+    <div>
+      <div className="mb-4 flex items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-action/10 text-action">
+          <Bell size={20} />
+        </div>
+        <div>
+          <h1 className="text-lg font-semibold text-ink">Notifications</h1>
+          <p className="text-sm text-muted">Stay updated on important alerts, reminders and activities.</p>
+        </div>
+      </div>
+
+      <div className="mb-4 flex flex-wrap gap-2">
+        {CATEGORIES.map((c) => (
+          <button
+            key={c}
+            type="button"
+            onClick={() => setCategory(c)}
+            className={`rounded-full px-3 py-1.5 text-xs font-medium ${
+              category === c ? "bg-action text-white" : "border border-border text-ink hover:bg-surface"
+            }`}
+          >
+            {c === "ALL" ? "All" : NOTIFICATION_CATEGORY_LABELS[c]} ({counts[c]})
+          </button>
+        ))}
+        <button
+          type="button"
+          onClick={() => setUnreadOnly((v) => !v)}
+          className={`rounded-full px-3 py-1.5 text-xs font-medium ${
+            unreadOnly ? "bg-action text-white" : "border border-border text-ink hover:bg-surface"
+          }`}
+        >
+          Unread ({unreadCount})
+        </button>
+        {unreadCount > 0 && (
+          <button
+            type="button"
+            onClick={handleMarkAllRead}
+            className="ml-auto flex items-center gap-1.5 text-sm font-medium text-action hover:underline"
+          >
+            <CheckCheck size={14} />
+            Mark all read
           </button>
         )}
       </div>
 
       <div className="rounded-xl border border-border bg-card shadow-sm">
-        {!result || result.data.length === 0 ? (
+        {!all || visible.length === 0 ? (
           <div className="flex flex-col items-center gap-2 px-4 py-12 text-center">
             <Bell size={24} className="text-muted" />
             <p className="text-sm text-muted">No notifications to show.</p>
           </div>
         ) : (
           <ul className="divide-y divide-border">
-            {result.data.map((n) => (
+            {visible.map((n) => (
               <li key={n.id}>
                 <button
                   type="button"
@@ -71,7 +139,10 @@ export function NotificationsPage() {
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <span className="text-sm font-medium text-ink">{n.title}</span>
+                    <div>
+                      <span className="text-sm font-medium text-ink">{n.title}</span>
+                      <span className="ml-2 text-xs text-muted">{NOTIFICATION_CATEGORY_LABELS[notificationCategory(n.type)]}</span>
+                    </div>
                     {!n.isRead && <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-action" />}
                   </div>
                   {n.message && <p className="mt-1 text-sm text-muted">{n.message}</p>}
@@ -82,30 +153,6 @@ export function NotificationsPage() {
           </ul>
         )}
       </div>
-
-      {result && result.meta.pageCount > 1 && (
-        <div className="mt-4 flex items-center justify-center gap-3 text-sm">
-          <button
-            type="button"
-            disabled={page <= 1}
-            onClick={() => setPage((p) => p - 1)}
-            className="rounded-lg border border-border px-3 py-1.5 disabled:opacity-40"
-          >
-            Previous
-          </button>
-          <span className="text-muted">
-            Page {result.meta.page} of {result.meta.pageCount}
-          </span>
-          <button
-            type="button"
-            disabled={page >= result.meta.pageCount}
-            onClick={() => setPage((p) => p + 1)}
-            className="rounded-lg border border-border px-3 py-1.5 disabled:opacity-40"
-          >
-            Next
-          </button>
-        </div>
-      )}
     </div>
   );
 }

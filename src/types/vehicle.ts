@@ -52,6 +52,7 @@ export interface Vehicle {
 export interface VehicleListResult {
   data: Vehicle[];
   meta: { total: number; page: number; pageSize: number; pageCount: number };
+  typeCounts?: Record<string, number>;
 }
 
 export interface VehicleFormValues {

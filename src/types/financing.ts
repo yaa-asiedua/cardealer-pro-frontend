@@ -16,6 +16,7 @@ export interface FinancingPaymentRecord {
 
 export interface Financing {
   id: string;
+  financingNumber: string;
   saleId: string;
   customerId: string;
   principalAmount: string;

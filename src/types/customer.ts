@@ -33,6 +33,7 @@ export interface Customer {
   // Computed server-side (not stored columns) — see customer.service.ts's
   // loadAggregates().
   transactionCount: number;
+  rentalCount: number;
   outstandingBalance: number;
   totalSpent: number;
   lastPurchaseDate: string | null;

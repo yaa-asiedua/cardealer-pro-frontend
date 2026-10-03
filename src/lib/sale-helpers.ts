@@ -1,4 +1,4 @@
-import type { SaleStatus } from "../types/sale";
+import type { SalePaymentStatus, SaleStatus } from "../types/sale";
 
 // Real backend PaymentMethod enum values (CASH/BANK_TRANSFER/MOBILE_MONEY/
 // CARD) — pair with paymentMethodLabel() from revenue-helpers.ts for
@@ -22,4 +22,19 @@ export const SALE_STATUS_LABELS: Record<SaleStatus, string> = {
   COMPLETED: "Completed",
   FAILED: "Failed",
   CANCELLED: "Cancelled",
+};
+
+// Mirrors the real Sale.paymentStatus enum exactly (PENDING/RECEIVED/
+// REVERSED) — a sale has no partial-payment ledger like a Rental does, so
+// there's no "Partial" state here.
+export const SALE_PAYMENT_STATUS_STYLES: Record<SalePaymentStatus, string> = {
+  PENDING: "bg-warning/10 text-warning",
+  RECEIVED: "bg-success/10 text-success",
+  REVERSED: "bg-danger/10 text-danger",
+};
+
+export const SALE_PAYMENT_STATUS_LABELS: Record<SalePaymentStatus, string> = {
+  PENDING: "Pending",
+  RECEIVED: "Paid",
+  REVERSED: "Refunded",
 };

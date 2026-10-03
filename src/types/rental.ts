@@ -10,6 +10,7 @@ export interface RentalPayment {
   amount: string;
   paymentDate: string;
   paymentMethod: string | null;
+  paymentRef: string;
   referenceNo: string | null;
   recordedBy: string;
   createdAt: string;
@@ -33,6 +34,7 @@ export interface Rental {
   actualReturnAt: string | null;
   dailyRate: string;
   rentalDays: number;
+  discount: string;
   totalCost: string;
   depositAmount: string | null;
   paymentStatus: RentalPaymentStatus;
@@ -60,10 +62,30 @@ export interface CreateRentalInput {
   startDate: string;
   endDate: string;
   dailyRate?: number;
+  discount?: number;
   depositAmount?: number;
   gpsEnabled?: boolean;
   gpsProvider?: string;
   notes?: string;
+}
+
+// GET /api/rentals/payments — distinct from Rental.payments above (which
+// only ever carries { amount } for the lighter-weight outstanding-balance
+// calc). Each row here is one real received-payment transaction, with
+// enough of its parent rental/customer/vehicle to render without a
+// second fetch.
+export interface RentalPaymentListRow extends RentalPayment {
+  rental: {
+    id: string;
+    rentalNumber: string;
+    customer: Pick<Customer, "id" | "firstName" | "lastName" | "phone" | "email" | "profilePhotoUrl">;
+    vehicle: Pick<Vehicle, "id" | "make" | "model" | "year" | "registrationNo" | "stockNumber" | "images">;
+  };
+}
+
+export interface RentalPaymentListResult {
+  data: RentalPaymentListRow[];
+  meta: { total: number; page: number; pageSize: number; pageCount: number };
 }
 
 export interface RentalsReportRow {

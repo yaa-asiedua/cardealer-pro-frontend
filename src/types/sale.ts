@@ -2,6 +2,7 @@ import type { Customer } from "./customer";
 import type { Vehicle } from "./vehicle";
 
 export type SaleStatus = "DRAFT" | "PENDING_FINANCE" | "COMPLETED" | "FAILED" | "CANCELLED";
+export type SalePaymentStatus = "PENDING" | "RECEIVED" | "REVERSED";
 export type FinancingStatus = "PENDING" | "APPROVED" | "REJECTED" | "ACTIVE" | "COMPLETED";
 export type TransferStatus = "PENDING" | "SUBMITTED_TO_REGISTRY" | "COMPLETED";
 
@@ -46,6 +47,7 @@ export interface Sale {
   discount: string;
   finalPrice: string;
   paymentMethod: string | null;
+  paymentStatus: SalePaymentStatus;
   saleStatus: SaleStatus;
   commissionRate: string;
   commissionAmount: string;
@@ -56,6 +58,10 @@ export interface Sale {
   vehicle: Vehicle;
   salesperson: SaleSalesperson;
   financing?: SaleFinancing | null;
+  tradeIn?: TradeIn | null;
+  // Most recent SALE-type receipt only (see sale.service.ts's listSales
+  // include) — empty until confirmSalePayment has actually run.
+  receipts?: { issuedAt: string }[];
   ownershipTransfer?: SaleOwnershipTransfer | null;
 }
 
@@ -72,6 +78,31 @@ export interface CreateSaleFinancingInput {
   firstPaymentDue?: string;
 }
 
+export interface TradeIn {
+  id: string;
+  saleId: string;
+  make: string;
+  model: string;
+  year: number;
+  vehicleType: string | null;
+  transmission: string | null;
+  fuelType: string | null;
+  tradeInValue: string;
+  outstandingLoan: string;
+  createdAt: string;
+}
+
+export interface CreateSaleTradeInInput {
+  make: string;
+  model: string;
+  year: number;
+  vehicleType?: string;
+  transmission?: string;
+  fuelType?: string;
+  tradeInValue: number;
+  outstandingLoan?: number;
+}
+
 export interface CreateSaleInput {
   customerId: string;
   vehicleId: string;
@@ -81,6 +112,7 @@ export interface CreateSaleInput {
   paymentMethod?: string;
   notes?: string;
   financing?: CreateSaleFinancingInput;
+  tradeIn?: CreateSaleTradeInInput;
 }
 
 export interface SalesReportRow {

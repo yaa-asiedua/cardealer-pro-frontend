@@ -3,6 +3,7 @@ import type { FormEvent, ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
+  ArrowLeftRight,
   Calendar,
   Car,
   Check,
@@ -35,11 +36,10 @@ interface SalespersonOption {
 }
 
 const STEPS = [
-  { n: 1, title: "Select Vehicle", subtitle: "Choose a vehicle" },
-  { n: 2, title: "Customer Details", subtitle: "Find or add a customer" },
-  { n: 3, title: "Sale Details", subtitle: "Pricing and terms" },
-  { n: 4, title: "Payment & Financing", subtitle: "Payment information" },
-  { n: 5, title: "Review & Confirm", subtitle: "Review and complete" },
+  { n: 1, title: "Vehicle & Customer", subtitle: "Select a vehicle and customer" },
+  { n: 2, title: "Sale Details", subtitle: "Pricing and terms" },
+  { n: 3, title: "Payment", subtitle: "Payment information" },
+  { n: 4, title: "Review & Confirm", subtitle: "Review and complete" },
 ];
 
 export function SaleFormPage() {
@@ -63,6 +63,13 @@ export function SaleFormPage() {
   const [sellingPrice, setSellingPrice] = useState("");
   const [discount, setDiscount] = useState("0");
   const [notes, setNotes] = useState("");
+
+  const [includeTradeIn, setIncludeTradeIn] = useState(false);
+  const [tradeInMake, setTradeInMake] = useState("");
+  const [tradeInModel, setTradeInModel] = useState("");
+  const [tradeInYear, setTradeInYear] = useState("");
+  const [tradeInValue, setTradeInValue] = useState("");
+  const [tradeInOutstandingLoan, setTradeInOutstandingLoan] = useState("0");
 
   const [saleType, setSaleType] = useState<"OUTRIGHT" | "FINANCING">("OUTRIGHT");
   const [paymentMethod, setPaymentMethod] = useState("");
@@ -129,6 +136,21 @@ export function SaleFormPage() {
     return Math.max(0, price - disc);
   }, [sellingPrice, discount]);
 
+  // A trade-in reduces what the customer actually owes, not the recorded
+  // sale price or commission (both stay based on finalPrice alone — see
+  // sale.service.ts's calculateAmountPayable, which this mirrors).
+  const netTradeInValue = useMemo(() => {
+    if (!includeTradeIn) return 0;
+    const value = Number(tradeInValue) || 0;
+    const loan = Number(tradeInOutstandingLoan) || 0;
+    return Math.max(0, value - loan);
+  }, [includeTradeIn, tradeInValue, tradeInOutstandingLoan]);
+
+  const amountPayable = useMemo(
+    () => Math.max(0, finalPricePreview - netTradeInValue),
+    [finalPricePreview, netTradeInValue]
+  );
+
   // Flat-rate (simple interest) financing, the standard for auto loans in
   // this market: the stated rate is annual and prorated by the actual term
   // rather than compounding on a shrinking balance — Total Interest =
@@ -143,25 +165,32 @@ export function SaleFormPage() {
     return (principal + totalInterest) / months;
   }, [principalAmount, interestRate, termMonths]);
 
+  const tradeInValid =
+    !includeTradeIn ||
+    (tradeInMake.trim() !== "" &&
+      tradeInModel.trim() !== "" &&
+      tradeInYear !== "" &&
+      Number(tradeInValue) > 0 &&
+      Number(tradeInOutstandingLoan) <= Number(tradeInValue));
+
   const stepValid = useMemo(
     () => ({
-      1: vehicle !== null,
-      2: customer !== null,
-      3: Number(sellingPrice) > 0 && (!isAdmin || salespersonId !== ""),
-      4: saleType === "OUTRIGHT" || (principalAmount !== "" && interestRate !== "" && termMonths !== ""),
+      1: vehicle !== null && customer !== null,
+      2: Number(sellingPrice) > 0 && (!isAdmin || salespersonId !== "") && tradeInValid,
+      3: saleType === "OUTRIGHT" || (principalAmount !== "" && interestRate !== "" && termMonths !== ""),
     }),
-    [vehicle, customer, sellingPrice, isAdmin, salespersonId, saleType, principalAmount, interestRate, termMonths]
+    [vehicle, customer, sellingPrice, isAdmin, salespersonId, tradeInValid, saleType, principalAmount, interestRate, termMonths]
   );
 
-  const allValid = stepValid[1] && stepValid[2] && stepValid[3] && stepValid[4];
+  const allValid = stepValid[1] && stepValid[2] && stepValid[3];
 
   function goToStep(n: number) {
     setActiveStep(n);
   }
 
   function goNext() {
-    if (!stepValid[activeStep as 1 | 2 | 3 | 4]) return;
-    setActiveStep((s) => Math.min(5, s + 1));
+    if (!stepValid[activeStep as 1 | 2 | 3]) return;
+    setActiveStep((s) => Math.min(4, s + 1));
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -191,6 +220,15 @@ export function SaleFormPage() {
                 firstPaymentDue: firstPaymentDue || undefined,
               }
             : undefined,
+        tradeIn: includeTradeIn
+          ? {
+              make: tradeInMake.trim(),
+              model: tradeInModel.trim(),
+              year: Number(tradeInYear),
+              tradeInValue: Number(tradeInValue),
+              outstandingLoan: Number(tradeInOutstandingLoan) || 0,
+            }
+          : undefined,
       };
       await api.post("/sales", payload);
       showToast("Sale created");
@@ -203,10 +241,16 @@ export function SaleFormPage() {
   }
 
   const stepSummary: Record<number, string> = {
-    1: vehicle ? `${vehicleDisplayName(vehicle)} · ${formatCurrency(sellingPrice)}` : "Not selected yet",
-    2: customer ? customerDisplayName(customer) : "Not selected yet",
-    3: Number(sellingPrice) > 0 ? `Final price ${formatCurrency(finalPricePreview)}` : "Not set yet",
-    4: saleType === "FINANCING" ? "Financing" : paymentMethod ? paymentMethodLabel(paymentMethod) : "Outright purchase",
+    1:
+      vehicle && customer
+        ? `${vehicleDisplayName(vehicle)} · ${customerDisplayName(customer)}`
+        : vehicle
+          ? vehicleDisplayName(vehicle)
+          : customer
+            ? customerDisplayName(customer)
+            : "Not selected yet",
+    2: Number(sellingPrice) > 0 ? `Final price ${formatCurrency(finalPricePreview)}` : "Not set yet",
+    3: saleType === "FINANCING" ? "Financing" : paymentMethod ? paymentMethodLabel(paymentMethod) : "Outright purchase",
   };
 
   return (
@@ -234,12 +278,12 @@ export function SaleFormPage() {
                 className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold ${
                   activeStep === s.n
                     ? "bg-action text-white"
-                    : stepValid[s.n as 1 | 2 | 3 | 4] || s.n < activeStep
+                    : stepValid[s.n as 1 | 2 | 3] || s.n < activeStep
                       ? "bg-success/10 text-success"
                       : "bg-surface text-muted"
                 }`}
               >
-                {(stepValid[s.n as 1 | 2 | 3 | 4] || s.n < activeStep) && activeStep !== s.n ? <Check size={16} /> : s.n}
+                {(stepValid[s.n as 1 | 2 | 3] || s.n < activeStep) && activeStep !== s.n ? <Check size={16} /> : s.n}
               </span>
               <span className={`mt-1.5 max-w-[110px] text-xs font-semibold ${activeStep === s.n ? "text-action" : "text-ink"}`}>
                 {s.title}
@@ -259,196 +303,194 @@ export function SaleFormPage() {
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="flex flex-col gap-4 lg:col-span-2">
-          {/* Step 1: Select Vehicle */}
+          {/* Step 1: Vehicle & Customer */}
           <StepCard
             icon={Car}
             step={1}
-            title="1. Select Vehicle"
-            subtitle="Choose an available vehicle from inventory."
+            title="1. Vehicle & Customer"
+            subtitle="Choose the customer and the vehicle for this sale."
             active={activeStep === 1}
             summary={stepSummary[1]}
             onHeaderClick={() => goToStep(1)}
           >
-            {vehicle ? (
-              <div className="flex items-center gap-3 rounded-lg border border-border p-3">
-                <div className="flex h-16 w-20 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-surface text-muted">
-                  {vehicle.images?.[0] ? (
-                    <img src={vehicle.images[0].fileUrl} alt="" className="h-full w-full object-cover" />
-                  ) : (
-                    <Car size={20} />
-                  )}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-semibold text-ink">{vehicleDisplayName(vehicle)}</span>
-                    <StatusBadge status={vehicle.status} />
-                  </div>
-                  <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-muted">
-                    {vehicle.vehicleType && <span>{vehicle.vehicleType}</span>}
-                    {vehicle.fuelType && (
-                      <span className="flex items-center gap-1">
-                        <Fuel size={12} /> {vehicle.fuelType}
-                      </span>
-                    )}
-                    {vehicle.mileage != null && (
-                      <span className="flex items-center gap-1">
-                        <Gauge size={12} /> {vehicle.mileage.toLocaleString()} km
-                      </span>
-                    )}
-                  </div>
-                  <div className="mt-1 text-xs text-muted">
-                    Stock: {vehicle.stockNumber} · VIN: {vehicle.vin}
-                  </div>
-                </div>
-                <div className="flex shrink-0 flex-col items-end gap-2">
-                  <span className="font-semibold text-ink">{formatCurrency(vehicle.sellingPrice ?? 0)}</span>
-                  <button
-                    type="button"
-                    onClick={() => setVehicle(null)}
-                    className="rounded-lg border border-border px-2.5 py-1 text-xs font-medium text-ink hover:bg-surface"
-                  >
-                    Change Vehicle
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <SearchSelect
-                placeholder="Search available vehicles by make, model, VIN…"
-                selected={null}
-                onSelect={(v) => v && handleSelectVehicle(v)}
-                fetchOptions={fetchVehicles}
-                getId={(v) => v.id}
-                getLabel={(v) => vehicleDisplayName(v)}
-                getSubLabel={(v) => `${v.stockNumber}${v.sellingPrice ? ` · ${formatCurrency(v.sellingPrice)}` : ""}`}
-              />
-            )}
-            <StepNextButton visible={activeStep === 1} disabled={!stepValid[1]} onClick={goNext} />
-          </StepCard>
-
-          {/* Step 2: Customer Details */}
-          <StepCard
-            icon={Users}
-            step={2}
-            title="2. Customer Details"
-            subtitle="Search for an existing customer or add a new one."
-            active={activeStep === 2}
-            summary={stepSummary[2]}
-            onHeaderClick={() => goToStep(2)}
-          >
-            {customer ? (
-              <div className="flex items-start gap-3 rounded-lg border border-border p-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-action/10 text-sm font-semibold text-action">
-                  {customer.firstName[0]}
-                  {customer.lastName[0]}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-semibold text-ink">{customerDisplayName(customer)}</span>
-                    <span className="rounded-full bg-success/10 px-2 py-0.5 text-[11px] font-medium text-success">
-                      Existing Customer
-                    </span>
-                  </div>
-                  <div className="mt-1 flex flex-wrap gap-x-3 text-xs text-muted">
-                    {customer.phone && <span>{customer.phone}</span>}
-                    {customer.email && <span>{customer.email}</span>}
-                    {customer.city && <span>{customer.city}</span>}
-                  </div>
-                  <div className="mt-1 text-xs text-muted">
-                    {customer.transactionCount} previous transaction{customer.transactionCount === 1 ? "" : "s"}
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setCustomer(null)}
-                  className="shrink-0 rounded-lg border border-border px-2.5 py-1 text-xs font-medium text-ink hover:bg-surface"
-                >
-                  Change Customer
-                </button>
-              </div>
-            ) : (
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               <div>
-                <div className="mb-3 flex gap-1 rounded-lg bg-surface p-1 text-sm">
-                  <button
-                    type="button"
-                    onClick={() => setCustomerTab("search")}
-                    className={`flex-1 rounded-md px-3 py-1.5 font-medium ${
-                      customerTab === "search" ? "bg-card text-action shadow-sm" : "text-muted"
-                    }`}
-                  >
-                    Search Existing Customer
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setCustomerTab("new")}
-                    className={`flex-1 rounded-md px-3 py-1.5 font-medium ${
-                      customerTab === "new" ? "bg-card text-action shadow-sm" : "text-muted"
-                    }`}
-                  >
-                    Add New Customer
-                  </button>
-                </div>
-
-                {customerTab === "search" ? (
-                  <SearchSelect
-                    placeholder="Search by name, phone, email, or customer ID…"
-                    selected={null}
-                    onSelect={(c) => c && setCustomer(c)}
-                    fetchOptions={fetchCustomers}
-                    getId={(c) => c.id}
-                    getLabel={(c) => customerDisplayName(c)}
-                    getSubLabel={(c) => c.phone ?? c.email ?? ""}
-                  />
-                ) : (
-                  <div className="grid grid-cols-2 gap-2">
-                    <input
-                      placeholder="First name"
-                      value={newCustomer.firstName}
-                      onChange={(e) => setNewCustomer((c) => ({ ...c, firstName: e.target.value }))}
-                      className={inputCls}
-                    />
-                    <input
-                      placeholder="Last name"
-                      value={newCustomer.lastName}
-                      onChange={(e) => setNewCustomer((c) => ({ ...c, lastName: e.target.value }))}
-                      className={inputCls}
-                    />
-                    <input
-                      placeholder="Phone"
-                      value={newCustomer.phone}
-                      onChange={(e) => setNewCustomer((c) => ({ ...c, phone: e.target.value }))}
-                      className={inputCls}
-                    />
-                    <input
-                      placeholder="Email"
-                      value={newCustomer.email}
-                      onChange={(e) => setNewCustomer((c) => ({ ...c, email: e.target.value }))}
-                      className={inputCls}
-                    />
+                <h3 className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-ink">
+                  <Users size={14} className="text-action" /> Customer
+                </h3>
+                {customer ? (
+                  <div className="flex items-start gap-3 rounded-lg border border-border p-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-action/10 text-sm font-semibold text-action">
+                      {customer.firstName[0]}
+                      {customer.lastName[0]}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-semibold text-ink">{customerDisplayName(customer)}</span>
+                        <span className="rounded-full bg-success/10 px-2 py-0.5 text-[11px] font-medium text-success">
+                          Existing Customer
+                        </span>
+                      </div>
+                      <div className="mt-1 flex flex-wrap gap-x-3 text-xs text-muted">
+                        {customer.phone && <span>{customer.phone}</span>}
+                        {customer.email && <span>{customer.email}</span>}
+                        {customer.city && <span>{customer.city}</span>}
+                      </div>
+                      <div className="mt-1 text-xs text-muted">
+                        {customer.transactionCount} previous transaction{customer.transactionCount === 1 ? "" : "s"}
+                      </div>
+                    </div>
                     <button
                       type="button"
-                      onClick={handleCreateCustomer}
-                      disabled={isCreatingCustomer}
-                      className="col-span-2 flex items-center justify-center gap-1.5 rounded-lg bg-action px-3 py-2 text-sm font-semibold text-white hover:bg-primary disabled:opacity-60"
+                      onClick={() => setCustomer(null)}
+                      className="shrink-0 rounded-lg border border-border px-2.5 py-1 text-xs font-medium text-ink hover:bg-surface"
                     >
-                      {isCreatingCustomer ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
-                      Create Customer
+                      Change
                     </button>
+                  </div>
+                ) : (
+                  <div>
+                    <div className="mb-3 flex gap-1 rounded-lg bg-surface p-1 text-sm">
+                      <button
+                        type="button"
+                        onClick={() => setCustomerTab("search")}
+                        className={`flex-1 rounded-md px-3 py-1.5 font-medium ${
+                          customerTab === "search" ? "bg-card text-action shadow-sm" : "text-muted"
+                        }`}
+                      >
+                        Search Existing
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setCustomerTab("new")}
+                        className={`flex-1 rounded-md px-3 py-1.5 font-medium ${
+                          customerTab === "new" ? "bg-card text-action shadow-sm" : "text-muted"
+                        }`}
+                      >
+                        Add New
+                      </button>
+                    </div>
+
+                    {customerTab === "search" ? (
+                      <SearchSelect
+                        placeholder="Search by name, phone, email, or customer ID…"
+                        selected={null}
+                        onSelect={(c) => c && setCustomer(c)}
+                        fetchOptions={fetchCustomers}
+                        getId={(c) => c.id}
+                        getLabel={(c) => customerDisplayName(c)}
+                        getSubLabel={(c) => c.phone ?? c.email ?? ""}
+                      />
+                    ) : (
+                      <div className="grid grid-cols-2 gap-2">
+                        <input
+                          placeholder="First name"
+                          value={newCustomer.firstName}
+                          onChange={(e) => setNewCustomer((c) => ({ ...c, firstName: e.target.value }))}
+                          className={inputCls}
+                        />
+                        <input
+                          placeholder="Last name"
+                          value={newCustomer.lastName}
+                          onChange={(e) => setNewCustomer((c) => ({ ...c, lastName: e.target.value }))}
+                          className={inputCls}
+                        />
+                        <input
+                          placeholder="Phone"
+                          value={newCustomer.phone}
+                          onChange={(e) => setNewCustomer((c) => ({ ...c, phone: e.target.value }))}
+                          className={inputCls}
+                        />
+                        <input
+                          placeholder="Email"
+                          value={newCustomer.email}
+                          onChange={(e) => setNewCustomer((c) => ({ ...c, email: e.target.value }))}
+                          className={inputCls}
+                        />
+                        <button
+                          type="button"
+                          onClick={handleCreateCustomer}
+                          disabled={isCreatingCustomer}
+                          className="col-span-2 flex items-center justify-center gap-1.5 rounded-lg bg-action px-3 py-2 text-sm font-semibold text-white hover:bg-primary disabled:opacity-60"
+                        >
+                          {isCreatingCustomer ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
+                          Create Customer
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
-            )}
-            <StepNextButton visible={activeStep === 2} disabled={!stepValid[2]} onClick={goNext} />
+
+              <div>
+                <h3 className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-ink">
+                  <Car size={14} className="text-action" /> Vehicle
+                </h3>
+                {vehicle ? (
+                  <div className="flex items-center gap-3 rounded-lg border border-border p-3">
+                    <div className="flex h-16 w-20 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-surface text-muted">
+                      {vehicle.images?.[0] ? (
+                        <img src={vehicle.images[0].fileUrl} alt="" className="h-full w-full object-cover" />
+                      ) : (
+                        <Car size={20} />
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-semibold text-ink">{vehicleDisplayName(vehicle)}</span>
+                        <StatusBadge status={vehicle.status} />
+                      </div>
+                      <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-muted">
+                        {vehicle.vehicleType && <span>{vehicle.vehicleType}</span>}
+                        {vehicle.fuelType && (
+                          <span className="flex items-center gap-1">
+                            <Fuel size={12} /> {vehicle.fuelType}
+                          </span>
+                        )}
+                        {vehicle.mileage != null && (
+                          <span className="flex items-center gap-1">
+                            <Gauge size={12} /> {vehicle.mileage.toLocaleString()} km
+                          </span>
+                        )}
+                      </div>
+                      <div className="mt-1 text-xs text-muted">
+                        Stock: {vehicle.stockNumber} · VIN: {vehicle.vin}
+                      </div>
+                      <div className="mt-1 text-xs font-semibold text-ink">{formatCurrency(vehicle.sellingPrice ?? 0)}</div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setVehicle(null)}
+                      className="shrink-0 rounded-lg border border-border px-2.5 py-1 text-xs font-medium text-ink hover:bg-surface"
+                    >
+                      Change
+                    </button>
+                  </div>
+                ) : (
+                  <SearchSelect
+                    placeholder="Search available vehicles by make, model, VIN…"
+                    selected={null}
+                    onSelect={(v) => v && handleSelectVehicle(v)}
+                    fetchOptions={fetchVehicles}
+                    getId={(v) => v.id}
+                    getLabel={(v) => vehicleDisplayName(v)}
+                    getSubLabel={(v) => `${v.stockNumber}${v.sellingPrice ? ` · ${formatCurrency(v.sellingPrice)}` : ""}`}
+                  />
+                )}
+              </div>
+            </div>
+            <StepNextButton visible={activeStep === 1} disabled={!stepValid[1]} onClick={goNext} />
           </StepCard>
 
-          {/* Step 3: Sale Details */}
+          {/* Step 2: Sale Details */}
           <StepCard
             icon={FileText}
-            step={3}
-            title="3. Sale Details"
+            step={2}
+            title="2. Sale Details"
             subtitle="Set the sale price and additional details."
-            active={activeStep === 3}
-            summary={stepSummary[3]}
-            onHeaderClick={() => goToStep(3)}
+            active={activeStep === 2}
+            summary={stepSummary[2]}
+            onHeaderClick={() => goToStep(2)}
           >
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Field label="Sale Price (GHS)" required>
@@ -528,18 +570,88 @@ export function SaleFormPage() {
                 </Field>
               </div>
             </div>
-            <StepNextButton visible={activeStep === 3} disabled={!stepValid[3]} onClick={goNext} />
+
+            <div className="mt-4 rounded-lg border border-border p-4">
+              <label className="flex items-center justify-between">
+                <span className="flex items-center gap-2 text-sm font-semibold text-ink">
+                  <ArrowLeftRight size={16} className="text-action" /> Trade-in Vehicle (Optional)
+                </span>
+                <input
+                  type="checkbox"
+                  checked={includeTradeIn}
+                  onChange={(e) => setIncludeTradeIn(e.target.checked)}
+                  className="h-4 w-4"
+                />
+              </label>
+
+              {includeTradeIn && (
+                <>
+                  <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-3">
+                    <Field label="Make" required>
+                      <input required value={tradeInMake} onChange={(e) => setTradeInMake(e.target.value)} className={inputCls} />
+                    </Field>
+                    <Field label="Model" required>
+                      <input required value={tradeInModel} onChange={(e) => setTradeInModel(e.target.value)} className={inputCls} />
+                    </Field>
+                    <Field label="Year" required>
+                      <input
+                        required
+                        type="number"
+                        value={tradeInYear}
+                        onChange={(e) => setTradeInYear(e.target.value)}
+                        className={inputCls}
+                      />
+                    </Field>
+                    <Field label="Trade-in Value (GHS)" required>
+                      <input
+                        required
+                        type="number"
+                        min={0}
+                        step="0.01"
+                        value={tradeInValue}
+                        onChange={(e) => setTradeInValue(e.target.value)}
+                        className={inputCls}
+                      />
+                    </Field>
+                    <Field label="Outstanding Loan (GHS)">
+                      <input
+                        type="number"
+                        min={0}
+                        step="0.01"
+                        value={tradeInOutstandingLoan}
+                        onChange={(e) => setTradeInOutstandingLoan(e.target.value)}
+                        className={inputCls}
+                      />
+                    </Field>
+                    <Field label="Net Trade-in Value (GHS)">
+                      <div className="flex h-[38px] items-center rounded-lg bg-surface px-3 text-sm font-semibold text-ink">
+                        {formatCurrency(netTradeInValue)}
+                      </div>
+                    </Field>
+                  </div>
+                  {Number(tradeInOutstandingLoan) > Number(tradeInValue || 0) && (
+                    <p className="mt-2 text-xs text-danger">Outstanding loan cannot exceed the trade-in value.</p>
+                  )}
+                  <div className="mt-3 flex items-center justify-between rounded-lg bg-action/5 px-3 py-2 text-sm">
+                    <span className="font-medium text-ink">Amount Payable</span>
+                    <span className="font-semibold text-ink">{formatCurrency(amountPayable)}</span>
+                  </div>
+                </>
+              )}
+            </div>
+
+            <StepNextButton visible={activeStep === 2} disabled={!stepValid[2]} onClick={goNext} />
           </StepCard>
 
-          {/* Step 4: Payment & Financing */}
+          {/* Step 3: Payment & Financing */}
           <StepCard
             icon={CreditCard}
-            step={4}
-            title="4. Payment & Financing"
+            step={3}
+            title="3. Payment"
             subtitle="Record payment information or link to a financing application."
-            active={activeStep === 4}
-            summary={stepSummary[4]}
-            onHeaderClick={() => goToStep(4)}
+            active={activeStep === 3}
+            summary={stepSummary[3]}
+            onHeaderClick={() => goToStep(3)}
           >
             {saleType === "OUTRIGHT" ? (
               <Field label="Payment Method">
@@ -601,18 +713,18 @@ export function SaleFormPage() {
                 </Field>
               </div>
             )}
-            <StepNextButton visible={activeStep === 4} disabled={!stepValid[4]} onClick={goNext} />
+            <StepNextButton visible={activeStep === 3} disabled={!stepValid[3]} onClick={goNext} />
           </StepCard>
 
-          {/* Step 5: Review & Confirm */}
+          {/* Step 4: Review & Confirm */}
           <StepCard
             icon={FileText}
-            step={5}
-            title="5. Review & Confirm"
+            step={4}
+            title="4. Review & Confirm"
             subtitle="Review the sale details before submitting."
-            active={activeStep === 5}
+            active={activeStep === 4}
             summary={undefined}
-            onHeaderClick={() => goToStep(5)}
+            onHeaderClick={() => goToStep(4)}
           >
             <dl className="flex flex-col gap-2 text-sm">
               <ReviewRow label="Vehicle" value={vehicle ? vehicleDisplayName(vehicle) : "—"} />
@@ -620,6 +732,13 @@ export function SaleFormPage() {
               <ReviewRow label="Sale Price" value={formatCurrency(sellingPrice || 0)} />
               <ReviewRow label="Discount" value={formatCurrency(discount || 0)} />
               <ReviewRow label="Final Price" value={formatCurrency(finalPricePreview)} />
+              {includeTradeIn && (
+                <>
+                  <ReviewRow label="Trade-in" value={`${tradeInYear} ${tradeInMake} ${tradeInModel}`.trim()} />
+                  <ReviewRow label="Net Trade-in Value" value={`- ${formatCurrency(netTradeInValue)}`} />
+                  <ReviewRow label="Amount Payable" value={formatCurrency(amountPayable)} />
+                </>
+              )}
               <ReviewRow label="Sale Type" value={saleType === "OUTRIGHT" ? "Outright Purchase" : "Financing"} />
               {saleType === "OUTRIGHT" ? (
                 <ReviewRow label="Payment Method" value={paymentMethod ? paymentMethodLabel(paymentMethod) : "Not set"} />
@@ -676,6 +795,12 @@ export function SaleFormPage() {
               <Row2 label="Sale Price" value={formatCurrency(sellingPrice || 0)} />
               <Row2 label="Discount" value={formatCurrency(discount || 0)} />
               <Row2 label="Final Price" value={formatCurrency(finalPricePreview)} bold />
+              {includeTradeIn && (
+                <>
+                  <Row2 label="Trade-in Value" value={`- ${formatCurrency(netTradeInValue)}`} />
+                  <Row2 label="Amount Payable" value={formatCurrency(amountPayable)} bold />
+                </>
+              )}
             </div>
 
             <div className="border-b border-border pb-3">
@@ -711,7 +836,7 @@ export function SaleFormPage() {
           >
             Cancel
           </button>
-          {activeStep === 5 ? (
+          {activeStep === 4 ? (
             <button
               type="submit"
               disabled={isSubmitting || !allValid}
@@ -724,7 +849,7 @@ export function SaleFormPage() {
             <button
               type="button"
               onClick={goNext}
-              disabled={!stepValid[activeStep as 1 | 2 | 3 | 4]}
+              disabled={!stepValid[activeStep as 1 | 2 | 3]}
               className="rounded-lg bg-action px-4 py-2 text-sm font-semibold text-white hover:bg-primary disabled:cursor-not-allowed disabled:opacity-60"
             >
               Next
