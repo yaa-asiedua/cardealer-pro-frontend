@@ -236,7 +236,7 @@ export function RentalsDashboard({ data }: { data: RentalsDashboardData }) {
               <p className="py-10 text-center text-sm text-muted">No rental activity yet this month.</p>
             ) : (
               <ResponsiveContainer width="100%" height={220}>
-                <BarChart data={activityData}>
+                <BarChart accessibilityLayer data={activityData}>
                   <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
                   <XAxis dataKey="day" tick={{ fill: tickFill, fontSize: 12 }} />
                   <YAxis tick={{ fill: tickFill, fontSize: 12 }} allowDecimals={false} />
@@ -325,39 +325,41 @@ export function RentalsDashboard({ data }: { data: RentalsDashboardData }) {
           {!dueToday || dueToday.data.length === 0 ? (
             <p className="py-6 text-center text-sm text-muted">No rentals due for return today.</p>
           ) : (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-xs uppercase tracking-wide text-muted">
-                  <th className="pb-2 font-semibold">Customer</th>
-                  <th className="pb-2 font-semibold">Vehicle</th>
-                  <th className="pb-2 font-semibold">Return Date</th>
-                  <th className="pb-2 font-semibold"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {dueToday.data.map((r) => (
-                  <tr key={r.id} className="border-t border-border">
-                    <td className="py-2">
-                      <CustomerCell rental={r} />
-                    </td>
-                    <td className="py-2">
-                      <VehicleCell rental={r} />
-                    </td>
-                    <td className="py-2 text-ink">
-                      {formatDate(r.endDate)}
-                      <span className="ml-2">
-                        <RentalRowStatusBadge rental={r} />
-                      </span>
-                    </td>
-                    <td className="py-2 text-right">
-                      <button type="button" onClick={() => setViewingRentalId(r.id)} className="text-xs font-medium text-action hover:underline">
-                        View
-                      </button>
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-xs uppercase tracking-wide text-muted">
+                    <th className="pb-2 font-semibold">Customer</th>
+                    <th className="pb-2 font-semibold">Vehicle</th>
+                    <th className="pb-2 font-semibold">Return Date</th>
+                    <th className="pb-2 font-semibold"></th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {dueToday.data.map((r) => (
+                    <tr key={r.id} className="border-t border-border">
+                      <td className="py-2">
+                        <CustomerCell rental={r} />
+                      </td>
+                      <td className="py-2">
+                        <VehicleCell rental={r} />
+                      </td>
+                      <td className="py-2 text-ink">
+                        {formatDate(r.endDate)}
+                        <span className="ml-2">
+                          <RentalRowStatusBadge rental={r} />
+                        </span>
+                      </td>
+                      <td className="py-2 text-right">
+                        <button type="button" onClick={() => setViewingRentalId(r.id)} className="text-xs font-medium text-action hover:underline">
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </SectionCard>
 
@@ -365,39 +367,41 @@ export function RentalsDashboard({ data }: { data: RentalsDashboardData }) {
           {!overdue || overdue.data.length === 0 ? (
             <p className="py-6 text-center text-sm text-muted">No overdue rentals.</p>
           ) : (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-xs uppercase tracking-wide text-muted">
-                  <th className="pb-2 font-semibold">Customer</th>
-                  <th className="pb-2 font-semibold">Vehicle</th>
-                  <th className="pb-2 font-semibold">Status</th>
-                  <th className="pb-2 font-semibold"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {overdue.data.map((r) => (
-                  <tr key={r.id} className="border-t border-border">
-                    <td className="py-2">
-                      <CustomerCell rental={r} />
-                    </td>
-                    <td className="py-2">
-                      <VehicleCell rental={r} />
-                    </td>
-                    <td className="py-2">
-                      <RentalRowStatusBadge rental={r} />
-                      <div className="mt-0.5 text-xs text-muted">
-                        {daysOverdue(r.endDate)} day{daysOverdue(r.endDate) === 1 ? "" : "s"} overdue
-                      </div>
-                    </td>
-                    <td className="py-2 text-right">
-                      <button type="button" onClick={() => setViewingRentalId(r.id)} className="text-xs font-medium text-action hover:underline">
-                        View
-                      </button>
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-xs uppercase tracking-wide text-muted">
+                    <th className="pb-2 font-semibold">Customer</th>
+                    <th className="pb-2 font-semibold">Vehicle</th>
+                    <th className="pb-2 font-semibold">Status</th>
+                    <th className="pb-2 font-semibold"></th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {overdue.data.map((r) => (
+                    <tr key={r.id} className="border-t border-border">
+                      <td className="py-2">
+                        <CustomerCell rental={r} />
+                      </td>
+                      <td className="py-2">
+                        <VehicleCell rental={r} />
+                      </td>
+                      <td className="py-2">
+                        <RentalRowStatusBadge rental={r} />
+                        <div className="mt-0.5 text-xs text-muted">
+                          {daysOverdue(r.endDate)} day{daysOverdue(r.endDate) === 1 ? "" : "s"} overdue
+                        </div>
+                      </td>
+                      <td className="py-2 text-right">
+                        <button type="button" onClick={() => setViewingRentalId(r.id)} className="text-xs font-medium text-action hover:underline">
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </SectionCard>
       </div>

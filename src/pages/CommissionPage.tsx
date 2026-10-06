@@ -227,7 +227,7 @@ export function CommissionPage() {
               <div className="flex h-[220px] items-center justify-center text-sm text-muted">No commission history yet.</div>
             ) : (
               <ResponsiveContainer width="100%" height={220}>
-                <BarChart data={trend} margin={{ left: -20 }}>
+                <BarChart accessibilityLayer data={trend} margin={{ left: -20 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
                   <XAxis dataKey="month" tick={{ fontSize: 11, fill: tickFill }} />
                   <YAxis tick={{ fontSize: 11, fill: tickFill }} tickFormatter={(v: number) => formatCurrencyCompact(v)} />
@@ -302,54 +302,56 @@ export function CommissionPage() {
         )}
 
         <div className="overflow-hidden rounded-xl border border-border bg-card">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted">
-                <th className="px-4 py-3 font-semibold">Sale Reference</th>
-                <th className="px-4 py-3 font-semibold">Customer</th>
-                <th className="px-4 py-3 font-semibold">Vehicle</th>
-                <th className="px-4 py-3 text-right font-semibold">Sale Amount</th>
-                <th className="px-4 py-3 text-right font-semibold">Commission</th>
-                <th className="px-4 py-3 font-semibold">Sale Date</th>
-                <th className="px-4 py-3 font-semibold">Payment Status</th>
-                <th className="px-4 py-3 font-semibold">Payment Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {isLoading ? (
-                <tr>
-                  <td colSpan={8} className="px-4 py-10 text-center text-muted">
-                    <Loader2 size={18} className="mx-auto animate-spin" />
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted">
+                  <th className="px-4 py-3 font-semibold">Sale Reference</th>
+                  <th className="px-4 py-3 font-semibold">Customer</th>
+                  <th className="px-4 py-3 font-semibold">Vehicle</th>
+                  <th className="px-4 py-3 text-right font-semibold">Sale Amount</th>
+                  <th className="px-4 py-3 text-right font-semibold">Commission</th>
+                  <th className="px-4 py-3 font-semibold">Sale Date</th>
+                  <th className="px-4 py-3 font-semibold">Payment Status</th>
+                  <th className="px-4 py-3 font-semibold">Payment Date</th>
                 </tr>
-              ) : !result || result.data.length === 0 ? (
-                <tr>
-                  <td colSpan={8} className="px-4 py-10 text-center text-muted">
-                    No commission records match these filters.
-                  </td>
-                </tr>
-              ) : (
-                result.data.map((sale) => (
-                  <tr key={sale.id} className="border-b border-border last:border-0">
-                    <td className="px-4 py-3 font-mono text-xs text-action">{sale.saleNumber}</td>
-                    <td className="px-4 py-3 text-ink">{customerDisplayName(sale.customer)}</td>
-                    <td className="px-4 py-3 text-ink">{vehicleDisplayName(sale.vehicle)}</td>
-                    <td className="px-4 py-3 text-right tabular-nums text-ink">{formatCurrency(Number(sale.finalPrice))}</td>
-                    <td className="px-4 py-3 text-right tabular-nums font-medium text-ink">
-                      {formatCurrency(Number(sale.commissionAmount))}
-                    </td>
-                    <td className="px-4 py-3 text-xs text-muted">{formatDate(sale.saleDate)}</td>
-                    <td className="px-4 py-3">
-                      <SalePaymentStatusBadge status={sale.paymentStatus} />
-                    </td>
-                    <td className="px-4 py-3 text-xs text-muted">
-                      {sale.receipts && sale.receipts.length > 0 ? formatDate(sale.receipts[0].issuedAt) : "—"}
+              </thead>
+              <tbody>
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={8} className="px-4 py-10 text-center text-muted">
+                      <Loader2 size={18} className="mx-auto animate-spin" />
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : !result || result.data.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="px-4 py-10 text-center text-muted">
+                      No commission records match these filters.
+                    </td>
+                  </tr>
+                ) : (
+                  result.data.map((sale) => (
+                    <tr key={sale.id} className="border-b border-border last:border-0">
+                      <td className="px-4 py-3 font-mono text-xs text-action">{sale.saleNumber}</td>
+                      <td className="px-4 py-3 text-ink">{customerDisplayName(sale.customer)}</td>
+                      <td className="px-4 py-3 text-ink">{vehicleDisplayName(sale.vehicle)}</td>
+                      <td className="px-4 py-3 text-right tabular-nums text-ink">{formatCurrency(Number(sale.finalPrice))}</td>
+                      <td className="px-4 py-3 text-right tabular-nums font-medium text-ink">
+                        {formatCurrency(Number(sale.commissionAmount))}
+                      </td>
+                      <td className="px-4 py-3 text-xs text-muted">{formatDate(sale.saleDate)}</td>
+                      <td className="px-4 py-3">
+                        <SalePaymentStatusBadge status={sale.paymentStatus} />
+                      </td>
+                      <td className="px-4 py-3 text-xs text-muted">
+                        {sale.receipts && sale.receipts.length > 0 ? formatDate(sale.receipts[0].issuedAt) : "—"}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
 
           {result && result.meta.pageCount > 1 && (
             <div className="flex items-center justify-between border-t border-border px-4 py-3 text-sm">

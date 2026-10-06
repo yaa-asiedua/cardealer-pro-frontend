@@ -9,6 +9,7 @@ import { SearchSelect } from "../SearchSelect";
 import type { Customer } from "../../types/customer";
 import type { CreateRentalInput } from "../../types/rental";
 import type { Vehicle } from "../../types/vehicle";
+import { ModalOverlay } from "../ModalOverlay";
 
 interface RentalSalespersonOption {
   id: string;
@@ -191,7 +192,7 @@ export function RentalFormModal({ onClose, onSaved }: RentalFormModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-8">
+    <ModalOverlay onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-8">
       <div className="flex max-h-full w-full max-w-2xl flex-col rounded-xl border border-border bg-card shadow-lg">
         <div className="flex items-center justify-between border-b border-border px-6 py-4">
           <h2 className="text-base font-semibold text-ink">New Rental</h2>
@@ -426,7 +427,7 @@ export function RentalFormModal({ onClose, onSaved }: RentalFormModalProps) {
           </div>
         </form>
       </div>
-    </div>
+    </ModalOverlay>
   );
 }
 

@@ -84,7 +84,7 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
             </div>
           ) : (
             <ResponsiveContainer width="100%" height={260}>
-              <BarChart data={inventoryChartData} margin={{ left: -20 }}>
+              <BarChart accessibilityLayer data={inventoryChartData} margin={{ left: -20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
                 <XAxis dataKey="status" tick={{ fontSize: 11, fill: tickFill }} interval={0} angle={-20} textAnchor="end" height={60} />
                 <YAxis tick={{ fontSize: 11, fill: tickFill }} allowDecimals={false} />
@@ -101,7 +101,7 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
 
         <SectionCard title="Staff by role">
           <ResponsiveContainer width="100%" height={260}>
-            <BarChart data={staffChartData} margin={{ left: -20 }}>
+            <BarChart accessibilityLayer data={staffChartData} margin={{ left: -20 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
               <XAxis dataKey="role" tick={{ fontSize: 11, fill: tickFill }} interval={0} angle={-20} textAnchor="end" height={60} />
               <YAxis tick={{ fontSize: 11, fill: tickFill }} allowDecimals={false} />

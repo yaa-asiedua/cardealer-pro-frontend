@@ -444,7 +444,7 @@ function AllReportsView({
               <p className="py-10 text-center text-sm text-muted">No data for this period.</p>
             ) : (
               <ResponsiveContainer width="100%" height={220}>
-                <LineChart data={revenue.series} margin={{ left: -20 }}>
+                <LineChart accessibilityLayer data={revenue.series} margin={{ left: -20 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
                   <XAxis dataKey="date" tick={{ fontSize: 11, fill: tickFill }} tickFormatter={(d: string) => formatDate(d)} />
                   <YAxis tick={{ fontSize: 11, fill: tickFill }} tickFormatter={(v: number) => formatCurrencyCompact(v)} />
@@ -491,7 +491,7 @@ function AllReportsView({
             <p className="py-10 text-center text-sm text-muted">No revenue in this period.</p>
           ) : (
             <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={revenue.byCategory} margin={{ left: -20 }}>
+              <BarChart accessibilityLayer data={revenue.byCategory} margin={{ left: -20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
                 <XAxis dataKey="category" tick={{ fontSize: 11, fill: tickFill }} />
                 <YAxis tick={{ fontSize: 11, fill: tickFill }} tickFormatter={(v: number) => formatCurrencyCompact(v)} />

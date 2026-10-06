@@ -9,6 +9,7 @@ import { customerDisplayName } from "../types/customer";
 import type { Customer, CustomerListResult, CustomerStatus, CustomerType } from "../types/customer";
 import type { SaleListResult } from "../types/sale";
 import type { ReactNode } from "react";
+import { useEscapeKey } from "../lib/use-escape-key";
 
 interface Kpis {
   total: number;
@@ -53,6 +54,7 @@ export function MyCustomersPage() {
   const [selected, setSelected] = useState<Customer | null>(null);
   const [isLoadingDetail, setIsLoadingDetail] = useState(false);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  useEscapeKey(openMenuId !== null, () => setOpenMenuId(null));
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 350);
@@ -250,6 +252,7 @@ export function MyCustomersPage() {
                         <button
                           type="button"
                           onClick={() => setOpenMenuId(openMenuId === c.id ? null : c.id)}
+                          aria-expanded={openMenuId === c.id}
                           className="rounded-lg p-1.5 text-muted hover:bg-surface hover:text-ink"
                           aria-label="Actions"
                         >

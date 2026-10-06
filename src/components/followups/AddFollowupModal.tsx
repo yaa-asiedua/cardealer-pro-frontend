@@ -11,6 +11,7 @@ import type { Customer, CustomerListResult } from "../../types/customer";
 import type { FollowupType } from "../../types/followup";
 import type { Rental, RentalListResult } from "../../types/rental";
 import type { Vehicle, VehicleListResult } from "../../types/vehicle";
+import { ModalOverlay } from "../ModalOverlay";
 
 const TYPE_OPTIONS: { value: FollowupType; label: string }[] = [
   { value: "CALL", label: "Call" },
@@ -79,11 +80,11 @@ export function AddFollowupModal({ onClose, onSaved }: { onClose: () => void; on
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+    <ModalOverlay onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
       <div className="w-full max-w-lg rounded-xl bg-card p-6 shadow-lg">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-ink">Add Follow-up</h2>
-          <button type="button" onClick={onClose} className="text-muted hover:text-ink">
+          <button type="button" onClick={onClose} className="text-muted hover:text-ink" aria-label="Close">
             <X size={18} />
           </button>
         </div>
@@ -180,6 +181,6 @@ export function AddFollowupModal({ onClose, onSaved }: { onClose: () => void; on
           </div>
         </form>
       </div>
-    </div>
+    </ModalOverlay>
   );
 }

@@ -239,58 +239,60 @@ export function MySalesPage() {
           </div>
 
           <div className="overflow-hidden rounded-xl border border-border bg-card">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted">
-                  <th className="px-4 py-3 font-semibold">Customer</th>
-                  <th className="px-4 py-3 font-semibold">Vehicle</th>
-                  <th className="px-4 py-3 font-semibold">Sale Date</th>
-                  <th className="px-4 py-3 text-right font-semibold">Amount</th>
-                  <th className="px-4 py-3 font-semibold">Status</th>
-                  <th className="px-4 py-3 font-semibold">Payment</th>
-                </tr>
-              </thead>
-              <tbody>
-                {isLoading ? (
-                  <tr>
-                    <td colSpan={6} className="px-4 py-10 text-center text-muted">
-                      Loading…
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted">
+                    <th className="px-4 py-3 font-semibold">Customer</th>
+                    <th className="px-4 py-3 font-semibold">Vehicle</th>
+                    <th className="px-4 py-3 font-semibold">Sale Date</th>
+                    <th className="px-4 py-3 text-right font-semibold">Amount</th>
+                    <th className="px-4 py-3 font-semibold">Status</th>
+                    <th className="px-4 py-3 font-semibold">Payment</th>
                   </tr>
-                ) : error ? (
-                  <tr>
-                    <td colSpan={6} className="px-4 py-10 text-center text-danger">
-                      {error}
-                    </td>
-                  </tr>
-                ) : !result || result.data.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="px-4 py-10 text-center text-muted">
-                      No sales match these filters.
-                    </td>
-                  </tr>
-                ) : (
-                  result.data.map((sale) => (
-                    <tr
-                      key={sale.id}
-                      onClick={() => setDetailSaleId(sale.id)}
-                      className="cursor-pointer border-b border-border last:border-0 hover:bg-surface"
-                    >
-                      <td className="px-4 py-3 text-ink">{customerDisplayName(sale.customer)}</td>
-                      <td className="px-4 py-3 text-ink">{vehicleDisplayName(sale.vehicle)}</td>
-                      <td className="px-4 py-3 text-xs text-muted">{formatDate(sale.saleDate)}</td>
-                      <td className="px-4 py-3 text-right tabular-nums text-ink">{formatCurrency(Number(sale.finalPrice))}</td>
-                      <td className="px-4 py-3">
-                        <SaleStatusBadge status={sale.saleStatus} />
-                      </td>
-                      <td className="px-4 py-3">
-                        <SalePaymentStatusBadge status={sale.paymentStatus} />
+                </thead>
+                <tbody>
+                  {isLoading ? (
+                    <tr>
+                      <td colSpan={6} className="px-4 py-10 text-center text-muted">
+                        Loading…
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ) : error ? (
+                    <tr>
+                      <td colSpan={6} className="px-4 py-10 text-center text-danger">
+                        {error}
+                      </td>
+                    </tr>
+                  ) : !result || result.data.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="px-4 py-10 text-center text-muted">
+                        No sales match these filters.
+                      </td>
+                    </tr>
+                  ) : (
+                    result.data.map((sale) => (
+                      <tr
+                        key={sale.id}
+                        onClick={() => setDetailSaleId(sale.id)}
+                        className="cursor-pointer border-b border-border last:border-0 hover:bg-surface"
+                      >
+                        <td className="px-4 py-3 text-ink">{customerDisplayName(sale.customer)}</td>
+                        <td className="px-4 py-3 text-ink">{vehicleDisplayName(sale.vehicle)}</td>
+                        <td className="px-4 py-3 text-xs text-muted">{formatDate(sale.saleDate)}</td>
+                        <td className="px-4 py-3 text-right tabular-nums text-ink">{formatCurrency(Number(sale.finalPrice))}</td>
+                        <td className="px-4 py-3">
+                          <SaleStatusBadge status={sale.saleStatus} />
+                        </td>
+                        <td className="px-4 py-3">
+                          <SalePaymentStatusBadge status={sale.paymentStatus} />
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
 
             {result && result.meta.pageCount > 1 && (
               <div className="flex items-center justify-between border-t border-border px-4 py-3 text-sm">

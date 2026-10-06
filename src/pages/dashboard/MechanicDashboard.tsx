@@ -304,7 +304,7 @@ export function MechanicDashboard({ data }: { data: MechanicDashboardData }) {
             <p className="py-10 text-center text-sm text-muted">No jobs yet this month.</p>
           ) : (
             <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={serviceTypeBreakdown}>
+              <BarChart accessibilityLayer data={serviceTypeBreakdown}>
                 <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
                 <XAxis dataKey="name" tick={{ fill: tickFill, fontSize: 11 }} interval={0} angle={-20} textAnchor="end" height={50} />
                 <YAxis allowDecimals={false} tick={{ fill: tickFill, fontSize: 12 }} />

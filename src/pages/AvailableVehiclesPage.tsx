@@ -203,6 +203,8 @@ export function AvailableVehiclesPage() {
           <button
             type="button"
             onClick={() => setView("grid")}
+            aria-label="Grid view"
+            aria-pressed={view === "grid"}
             className={`rounded-lg border border-border p-1.5 ${view === "grid" ? "bg-action text-white" : "text-muted hover:bg-surface"}`}
           >
             <LayoutGrid size={16} />
@@ -210,6 +212,8 @@ export function AvailableVehiclesPage() {
           <button
             type="button"
             onClick={() => setView("list")}
+            aria-label="List view"
+            aria-pressed={view === "list"}
             className={`rounded-lg border border-border p-1.5 ${view === "list" ? "bg-action text-white" : "text-muted hover:bg-surface"}`}
           >
             <List size={16} />

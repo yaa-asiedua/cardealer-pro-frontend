@@ -30,3 +30,12 @@
 body {
   @apply bg-surface text-ink antialiased;
 }
+
+/* Design Brief §9: every control needs a visible keyboard focus state.
+   :focus-visible only fires for keyboard navigation, so mouse clicks
+   don't leave rings behind. Inputs keep their own focus:ring styling. */
+:where(a, button, summary, [role="button"], [tabindex]):focus-visible {
+  outline: 2px solid rgb(var(--color-action));
+  outline-offset: 2px;
+  border-radius: 0.375rem;
+}

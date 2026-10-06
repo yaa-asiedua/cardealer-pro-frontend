@@ -6,6 +6,7 @@ import { api, ApiError } from "../../lib/api-client";
 import { SearchSelect } from "../SearchSelect";
 import type { ServiceType } from "../../types/service";
 import type { Vehicle, VehicleListResult } from "../../types/vehicle";
+import { ModalOverlay } from "../ModalOverlay";
 
 interface MechanicOption {
   id: string;
@@ -80,7 +81,7 @@ export function ServiceJobFormModal({ onClose, onCreated }: ServiceJobFormModalP
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-8">
+    <ModalOverlay onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-8">
       <div className="flex max-h-full w-full max-w-xl flex-col rounded-xl border border-border bg-card shadow-lg">
         <div className="flex items-center justify-between border-b border-border px-6 py-4">
           <div className="flex items-center gap-3">
@@ -179,7 +180,7 @@ export function ServiceJobFormModal({ onClose, onCreated }: ServiceJobFormModalP
           </div>
         </form>
       </div>
-    </div>
+    </ModalOverlay>
   );
 }
 

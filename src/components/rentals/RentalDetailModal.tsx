@@ -9,6 +9,7 @@ import { vehicleDisplayName } from "../../lib/vehicle-helpers";
 import { outstandingBalance } from "../../types/rental";
 import { RentalStatusBadge } from "./RentalStatusBadge";
 import type { Rental } from "../../types/rental";
+import { ModalOverlay } from "../ModalOverlay";
 
 export function RentalDetailModal({ rentalId, onClose }: { rentalId: string; onClose: () => void }) {
   const [rental, setRental] = useState<Rental | null>(null);
@@ -28,7 +29,7 @@ export function RentalDetailModal({ rentalId, onClose }: { rentalId: string; onC
   }, [rentalId]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-8">
+    <ModalOverlay onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-8">
       <div className="flex max-h-full w-full max-w-xl flex-col rounded-xl border border-border bg-card shadow-lg">
         <div className="flex items-center justify-between border-b border-border px-6 py-4">
           <h2 className="text-base font-semibold text-ink">Rental Detail</h2>
@@ -133,7 +134,7 @@ export function RentalDetailModal({ rentalId, onClose }: { rentalId: string; onC
           )}
         </div>
       </div>
-    </div>
+    </ModalOverlay>
   );
 }
 

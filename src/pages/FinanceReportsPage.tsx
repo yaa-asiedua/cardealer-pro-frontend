@@ -384,7 +384,7 @@ export function FinanceReportsPage() {
               <p className="py-10 text-center text-sm text-muted">No financial activity yet this year.</p>
             ) : (
               <ResponsiveContainer width="100%" height={220}>
-                <BarChart data={paymentsVsFinancedChart}>
+                <BarChart accessibilityLayer data={paymentsVsFinancedChart}>
                   <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
                   <XAxis dataKey="month" tick={{ fill: tickFill, fontSize: 12 }} />
                   <YAxis tick={{ fill: tickFill, fontSize: 12 }} tickFormatter={(v) => formatCurrencyCompact(v)} />
@@ -438,7 +438,7 @@ export function FinanceReportsPage() {
               <p className="py-10 text-center text-sm text-muted">No applications yet this year.</p>
             ) : (
               <ResponsiveContainer width="100%" height={180}>
-                <LineChart data={applicationsTrendChart}>
+                <LineChart accessibilityLayer data={applicationsTrendChart}>
                   <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
                   <XAxis dataKey="month" tick={{ fill: tickFill, fontSize: 12 }} />
                   <YAxis tick={{ fill: tickFill, fontSize: 12 }} allowDecimals={false} />

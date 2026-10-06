@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { Car, X } from "lucide-react";
 import { NAV_BY_ROLE } from "../../lib/nav-config";
+import { useEscapeKey } from "../../lib/use-escape-key";
 import type { RoleCode } from "../../types";
 
 interface SidebarProps {
@@ -16,6 +17,7 @@ interface SidebarProps {
 // content (confirmed by testing the live dev server on an actual phone).
 export function Sidebar({ role, logoUrl, isOpen, onClose }: SidebarProps) {
   const items = NAV_BY_ROLE[role];
+  useEscapeKey(isOpen, onClose);
 
   return (
     <>

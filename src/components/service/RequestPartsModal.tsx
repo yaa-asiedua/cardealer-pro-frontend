@@ -5,6 +5,7 @@ import { useToast } from "../../context/ToastContext";
 import { api, ApiError } from "../../lib/api-client";
 import { vehicleDisplayName } from "../../lib/vehicle-helpers";
 import type { ServiceJob } from "../../types/service";
+import { ModalOverlay } from "../ModalOverlay";
 
 // First real "create" side of the Parts Request workflow — Admin's own
 // Service Center only ever reviews (approve/reject/fulfill); a Mechanic
@@ -56,7 +57,7 @@ export function RequestPartsModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+    <ModalOverlay onClose={onClose}>
       <div className="w-full max-w-md rounded-xl border border-border bg-card shadow-lg">
         <div className="flex items-center justify-between border-b border-border px-6 py-4">
           <div>
@@ -148,6 +149,6 @@ export function RequestPartsModal({
           </div>
         </form>
       </div>
-    </div>
+    </ModalOverlay>
   );
 }

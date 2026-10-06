@@ -197,66 +197,68 @@ export function FollowupsPage() {
           {error && <p className="mb-3 text-sm text-danger">{error}</p>}
 
           <div className="overflow-hidden rounded-xl border border-border bg-card">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted">
-                  <th className="px-4 py-3 font-semibold">Customer</th>
-                  {isRental && <th className="px-4 py-3 font-semibold">Rental Ref</th>}
-                  <th className="px-4 py-3 font-semibold">{isRental ? "Vehicle" : "Vehicle of Interest"}</th>
-                  <th className="px-4 py-3 font-semibold">Type</th>
-                  <th className="px-4 py-3 font-semibold">Due</th>
-                  <th className="px-4 py-3 font-semibold">Status</th>
-                  <th className="px-4 py-3 font-semibold">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {isLoading ? (
-                  <tr>
-                    <td colSpan={isRental ? 7 : 6} className="px-4 py-10 text-center text-muted">
-                      Loading…
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted">
+                    <th className="px-4 py-3 font-semibold">Customer</th>
+                    {isRental && <th className="px-4 py-3 font-semibold">Rental Ref</th>}
+                    <th className="px-4 py-3 font-semibold">{isRental ? "Vehicle" : "Vehicle of Interest"}</th>
+                    <th className="px-4 py-3 font-semibold">Type</th>
+                    <th className="px-4 py-3 font-semibold">Due</th>
+                    <th className="px-4 py-3 font-semibold">Status</th>
+                    <th className="px-4 py-3 font-semibold">Action</th>
                   </tr>
-                ) : !result || result.data.length === 0 ? (
-                  <tr>
-                    <td colSpan={isRental ? 7 : 6} className="px-4 py-10 text-center text-muted">
-                      No follow-ups match these filters.
-                    </td>
-                  </tr>
-                ) : (
-                  result.data.map((f) => {
-                    const Icon = TYPE_ICONS[f.type];
-                    const status = followupStatus(f);
-                    return (
-                      <tr key={f.id} className="border-b border-border last:border-0">
-                        <td className="px-4 py-3">
-                          <div className="font-medium text-ink">{customerDisplayName(f.customer)}</div>
-                          <div className="text-xs text-muted">{f.customer.phone ?? "—"}</div>
-                        </td>
-                        {isRental && <td className="px-4 py-3 text-xs text-muted">{f.rental?.rentalNumber ?? "—"}</td>}
-                        <td className="px-4 py-3 text-ink">{f.vehicle ? vehicleDisplayName(f.vehicle) : "—"}</td>
-                        <td className="px-4 py-3">
-                          <span className="flex items-center gap-1.5 text-ink">
-                            <Icon size={14} className="text-action" />
-                            {FOLLOWUP_TYPE_LABELS[f.type]}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-xs text-muted">{formatDateTime(f.dueAt)}</td>
-                        <td className="px-4 py-3">
-                          <span className={`inline-block whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold ${FOLLOWUP_STATUS_STYLES[status]}`}>
-                            {FOLLOWUP_STATUS_LABELS[status]}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3">
-                          <button type="button" onClick={() => toggleComplete(f)} className="text-xs font-medium text-action hover:underline">
-                            {f.completed ? "Reopen" : "Mark done"}
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {isLoading ? (
+                    <tr>
+                      <td colSpan={isRental ? 7 : 6} className="px-4 py-10 text-center text-muted">
+                        Loading…
+                      </td>
+                    </tr>
+                  ) : !result || result.data.length === 0 ? (
+                    <tr>
+                      <td colSpan={isRental ? 7 : 6} className="px-4 py-10 text-center text-muted">
+                        No follow-ups match these filters.
+                      </td>
+                    </tr>
+                  ) : (
+                    result.data.map((f) => {
+                      const Icon = TYPE_ICONS[f.type];
+                      const status = followupStatus(f);
+                      return (
+                        <tr key={f.id} className="border-b border-border last:border-0">
+                          <td className="px-4 py-3">
+                            <div className="font-medium text-ink">{customerDisplayName(f.customer)}</div>
+                            <div className="text-xs text-muted">{f.customer.phone ?? "—"}</div>
+                          </td>
+                          {isRental && <td className="px-4 py-3 text-xs text-muted">{f.rental?.rentalNumber ?? "—"}</td>}
+                          <td className="px-4 py-3 text-ink">{f.vehicle ? vehicleDisplayName(f.vehicle) : "—"}</td>
+                          <td className="px-4 py-3">
+                            <span className="flex items-center gap-1.5 text-ink">
+                              <Icon size={14} className="text-action" />
+                              {FOLLOWUP_TYPE_LABELS[f.type]}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-xs text-muted">{formatDateTime(f.dueAt)}</td>
+                          <td className="px-4 py-3">
+                            <span className={`inline-block whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold ${FOLLOWUP_STATUS_STYLES[status]}`}>
+                              {FOLLOWUP_STATUS_LABELS[status]}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3">
+                            <button type="button" onClick={() => toggleComplete(f)} className="text-xs font-medium text-action hover:underline">
+                              {f.completed ? "Reopen" : "Mark done"}
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
 
             {result && result.meta.pageCount > 1 && (
               <div className="flex items-center justify-between border-t border-border px-4 py-3 text-sm">

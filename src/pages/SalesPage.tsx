@@ -196,7 +196,7 @@ export function SalesPage() {
               </div>
             ) : (
               <ResponsiveContainer width="100%" height={240}>
-                <LineChart data={chartData} margin={{ left: -20 }}>
+                <LineChart accessibilityLayer data={chartData} margin={{ left: -20 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
                   <XAxis dataKey="day" tick={{ fontSize: 11, fill: tickFill }} />
                   <YAxis tick={{ fontSize: 11, fill: tickFill }} tickFormatter={(v) => formatCurrencyCompact(v)} />

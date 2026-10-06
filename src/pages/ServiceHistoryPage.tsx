@@ -543,7 +543,7 @@ export function ServiceHistoryPage() {
             <p className="py-10 text-center text-sm text-muted">No completed jobs in the last 6 months.</p>
           ) : (
             <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={monthlyTrend}>
+              <BarChart accessibilityLayer data={monthlyTrend}>
                 <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
                 <XAxis dataKey="month" tick={{ fill: tickFill, fontSize: 12 }} />
                 <YAxis allowDecimals={false} tick={{ fill: tickFill, fontSize: 12 }} />

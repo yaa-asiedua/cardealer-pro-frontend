@@ -9,6 +9,7 @@ import { vehicleDisplayName } from "../../lib/vehicle-helpers";
 import { paidSoFar } from "../../types/financing";
 import { FinancingStatusBadge } from "./FinancingStatusBadge";
 import type { Financing } from "../../types/financing";
+import { ModalOverlay } from "../ModalOverlay";
 
 export function FinancingDetailModal({ financingId, onClose }: { financingId: string; onClose: () => void }) {
   const [financing, setFinancing] = useState<Financing | null>(null);
@@ -35,7 +36,7 @@ export function FinancingDetailModal({ financingId, onClose }: { financingId: st
     new Date(financing.firstPaymentDue) < new Date();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-8">
+    <ModalOverlay onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-8">
       <div className="flex max-h-full w-full max-w-xl flex-col rounded-xl border border-border bg-card shadow-lg">
         <div className="flex items-center justify-between border-b border-border px-6 py-4">
           <h2 className="text-base font-semibold text-ink">Loan Detail</h2>
@@ -121,7 +122,7 @@ export function FinancingDetailModal({ financingId, onClose }: { financingId: st
           )}
         </div>
       </div>
-    </div>
+    </ModalOverlay>
   );
 }
 

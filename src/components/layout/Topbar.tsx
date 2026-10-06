@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useEscapeKey } from "../../lib/use-escape-key";
 import { useNavigate } from "react-router-dom";
 import { ChevronDown, LogOut, Menu, Moon, Sun, User as UserIcon } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
@@ -11,6 +12,7 @@ export function Topbar({ title, onMenuClick }: { title: string; onMenuClick: () 
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  useEscapeKey(isMenuOpen, () => setIsMenuOpen(false));
 
   async function handleLogout() {
     await logout();
@@ -48,6 +50,8 @@ export function Topbar({ title, onMenuClick }: { title: string; onMenuClick: () 
           <button
             type="button"
             onClick={() => setIsMenuOpen((v) => !v)}
+            aria-haspopup="menu"
+            aria-expanded={isMenuOpen}
             className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-surface"
           >
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-action/10 text-action">

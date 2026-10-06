@@ -378,7 +378,7 @@ export function AuditLogsPage() {
             <p className="py-10 text-center text-sm text-muted">No events match these filters.</p>
           ) : (
             <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={dailyTrend}>
+              <BarChart accessibilityLayer data={dailyTrend}>
                 <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
                 <XAxis dataKey="day" tick={{ fill: tickFill, fontSize: 11 }} />
                 <YAxis allowDecimals={false} tick={{ fill: tickFill, fontSize: 11 }} />

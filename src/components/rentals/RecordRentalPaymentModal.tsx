@@ -9,6 +9,7 @@ import { outstandingBalance } from "../../types/rental";
 import { vehicleDisplayName } from "../../lib/vehicle-helpers";
 import { customerDisplayName } from "../../types/customer";
 import type { Rental, RentalListResult } from "../../types/rental";
+import { ModalOverlay } from "../ModalOverlay";
 
 function fieldClass() {
   return "mt-1 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-ink outline-none focus:border-action focus:ring-1 focus:ring-action";
@@ -78,7 +79,7 @@ export function RecordRentalPaymentModal({ onClose, onRecorded }: RecordRentalPa
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+    <ModalOverlay onClose={onClose}>
       <div className="w-full max-w-lg rounded-xl border border-border bg-card p-6 shadow-lg">
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold text-ink">Record Payment</h2>
@@ -139,6 +140,6 @@ export function RecordRentalPaymentModal({ onClose, onRecorded }: RecordRentalPa
           )}
         </div>
       </div>
-    </div>
+    </ModalOverlay>
   );
 }

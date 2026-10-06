@@ -346,7 +346,7 @@ export function MechanicReportsPage() {
             <p className="py-10 text-center text-sm text-muted">No jobs in the last 6 months.</p>
           ) : (
             <ResponsiveContainer width="100%" height={180}>
-              <BarChart data={monthlyJobsTrend}>
+              <BarChart accessibilityLayer data={monthlyJobsTrend}>
                 <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
                 <XAxis dataKey="month" tick={{ fill: tickFill, fontSize: 11 }} />
                 <YAxis allowDecimals={false} tick={{ fill: tickFill, fontSize: 11 }} />
@@ -362,7 +362,7 @@ export function MechanicReportsPage() {
             <p className="py-10 text-center text-sm text-muted">No completed jobs in the last 6 months.</p>
           ) : (
             <ResponsiveContainer width="100%" height={180}>
-              <LineChart data={revenueTrend}>
+              <LineChart accessibilityLayer data={revenueTrend}>
                 <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
                 <XAxis dataKey="month" tick={{ fill: tickFill, fontSize: 11 }} />
                 <YAxis tick={{ fill: tickFill, fontSize: 11 }} tickFormatter={(v) => formatCurrencyCompact(v)} />
@@ -408,7 +408,7 @@ export function MechanicReportsPage() {
             <p className="py-10 text-center text-sm text-muted">No jobs in the last 6 months.</p>
           ) : (
             <ResponsiveContainer width="100%" height={180}>
-              <BarChart data={vehiclePerformance}>
+              <BarChart accessibilityLayer data={vehiclePerformance}>
                 <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
                 <XAxis dataKey="make" tick={{ fill: tickFill, fontSize: 11 }} />
                 <YAxis allowDecimals={false} tick={{ fill: tickFill, fontSize: 11 }} />

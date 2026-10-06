@@ -151,7 +151,7 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
               <p className="py-10 text-center text-sm text-muted">No completed sales yet this month.</p>
             ) : (
               <ResponsiveContainer width="100%" height={220}>
-                <LineChart data={chartData}>
+                <LineChart accessibilityLayer data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
                   <XAxis dataKey="day" tick={{ fill: tickFill, fontSize: 12 }} />
                   <YAxis tick={{ fill: tickFill, fontSize: 12 }} tickFormatter={(v) => formatCurrencyCompact(v)} />
@@ -238,30 +238,32 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
           {!recentSales || recentSales.data.length === 0 ? (
             <p className="py-6 text-center text-sm text-muted">No sales yet.</p>
           ) : (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-xs uppercase tracking-wide text-muted">
-                  <th className="pb-2 font-semibold">Vehicle</th>
-                  <th className="pb-2 font-semibold">Customer</th>
-                  <th className="pb-2 font-semibold">Sale Date</th>
-                  <th className="pb-2 text-right font-semibold">Amount</th>
-                  <th className="pb-2 font-semibold">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentSales.data.map((sale) => (
-                  <tr key={sale.id} className="border-t border-border">
-                    <td className="py-2 text-ink">{vehicleDisplayName(sale.vehicle)}</td>
-                    <td className="py-2 text-ink">{customerDisplayName(sale.customer)}</td>
-                    <td className="py-2 text-ink">{formatDate(sale.saleDate)}</td>
-                    <td className="py-2 text-right tabular-nums text-ink">{formatCurrency(Number(sale.finalPrice))}</td>
-                    <td className="py-2">
-                      <SaleStatusBadge status={sale.saleStatus} />
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-xs uppercase tracking-wide text-muted">
+                    <th className="pb-2 font-semibold">Vehicle</th>
+                    <th className="pb-2 font-semibold">Customer</th>
+                    <th className="pb-2 font-semibold">Sale Date</th>
+                    <th className="pb-2 text-right font-semibold">Amount</th>
+                    <th className="pb-2 font-semibold">Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {recentSales.data.map((sale) => (
+                    <tr key={sale.id} className="border-t border-border">
+                      <td className="py-2 text-ink">{vehicleDisplayName(sale.vehicle)}</td>
+                      <td className="py-2 text-ink">{customerDisplayName(sale.customer)}</td>
+                      <td className="py-2 text-ink">{formatDate(sale.saleDate)}</td>
+                      <td className="py-2 text-right tabular-nums text-ink">{formatCurrency(Number(sale.finalPrice))}</td>
+                      <td className="py-2">
+                        <SaleStatusBadge status={sale.saleStatus} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
           <Link to="/sales" className="mt-3 block text-sm font-medium text-action hover:underline">
             View all →
@@ -272,30 +274,32 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
       {data.leaderboard.length > 0 && (
         <div className="mt-6">
           <SectionCard title="Commission leaderboard — this month">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-xs uppercase tracking-wide text-muted">
-                  <th className="pb-2 font-semibold">Rank</th>
-                  <th className="pb-2 font-semibold">Salesperson</th>
-                  <th className="pb-2 text-right font-semibold">Commission</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.leaderboard.map((row) => (
-                  <tr
-                    key={row.salespersonId}
-                    className={`border-t border-border ${row.salespersonId === user?.id ? "bg-action/5" : ""}`}
-                  >
-                    <td className="py-2 font-medium text-ink">#{row.rank}</td>
-                    <td className="py-2 text-ink">
-                      {row.fullName}
-                      {row.salespersonId === user?.id && <span className="ml-2 text-xs text-action">(you)</span>}
-                    </td>
-                    <td className="py-2 text-right tabular-nums text-ink">{formatCurrency(row.commission)}</td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-xs uppercase tracking-wide text-muted">
+                    <th className="pb-2 font-semibold">Rank</th>
+                    <th className="pb-2 font-semibold">Salesperson</th>
+                    <th className="pb-2 text-right font-semibold">Commission</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {data.leaderboard.map((row) => (
+                    <tr
+                      key={row.salespersonId}
+                      className={`border-t border-border ${row.salespersonId === user?.id ? "bg-action/5" : ""}`}
+                    >
+                      <td className="py-2 font-medium text-ink">#{row.rank}</td>
+                      <td className="py-2 text-ink">
+                        {row.fullName}
+                        {row.salespersonId === user?.id && <span className="ml-2 text-xs text-action">(you)</span>}
+                      </td>
+                      <td className="py-2 text-right tabular-nums text-ink">{formatCurrency(row.commission)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </SectionCard>
         </div>
       )}

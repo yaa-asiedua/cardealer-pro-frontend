@@ -8,6 +8,7 @@ import { DEPARTMENT_OPTIONS } from "../../lib/employee-helpers";
 import { ROLE_LABELS } from "../../lib/nav-config";
 import type { RoleCode } from "../../types";
 import type { CreateEmployeeInput, Employee, EmploymentStatus, UpdateEmployeeInput } from "../../types/employee";
+import { ModalOverlay } from "../ModalOverlay";
 
 interface EmployeeFormModalProps {
   employeeId?: string;
@@ -132,7 +133,7 @@ export function EmployeeFormModal({ employeeId, onClose, onSaved }: EmployeeForm
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-8">
+    <ModalOverlay onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-8">
       <div className="flex max-h-full w-full max-w-2xl flex-col rounded-xl border border-border bg-card shadow-lg">
         <div className="flex items-center justify-between border-b border-border px-6 py-4">
           <h2 className="text-base font-semibold text-ink">{isCreate ? "New Employee" : "Edit Employee"}</h2>
@@ -302,7 +303,7 @@ export function EmployeeFormModal({ employeeId, onClose, onSaved }: EmployeeForm
           </form>
         )}
       </div>
-    </div>
+    </ModalOverlay>
   );
 }
 

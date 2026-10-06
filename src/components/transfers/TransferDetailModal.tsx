@@ -7,6 +7,7 @@ import { customerDisplayName } from "../../types/customer";
 import { vehicleDisplayName } from "../../lib/vehicle-helpers";
 import { TransferStatusBadge } from "./TransferStatusBadge";
 import type { Transfer } from "../../types/transfer";
+import { ModalOverlay } from "../ModalOverlay";
 
 export function TransferDetailModal({ transferId, onClose }: { transferId: string; onClose: () => void }) {
   const [transfer, setTransfer] = useState<Transfer | null>(null);
@@ -26,7 +27,7 @@ export function TransferDetailModal({ transferId, onClose }: { transferId: strin
   }, [transferId]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-8">
+    <ModalOverlay onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-8">
       <div className="flex max-h-full w-full max-w-xl flex-col rounded-xl border border-border bg-card shadow-lg">
         <div className="flex items-center justify-between border-b border-border px-6 py-4">
           <h2 className="text-base font-semibold text-ink">Transfer Detail</h2>
@@ -92,7 +93,7 @@ export function TransferDetailModal({ transferId, onClose }: { transferId: strin
           )}
         </div>
       </div>
-    </div>
+    </ModalOverlay>
   );
 }
 

@@ -219,7 +219,7 @@ export function PaymentsRevenuePage() {
               <div className="flex h-[260px] items-center justify-center text-sm text-muted">No revenue recorded in this period yet.</div>
             ) : (
               <ResponsiveContainer width="100%" height={260}>
-                <LineChart data={overview.series} margin={{ left: -20 }}>
+                <LineChart accessibilityLayer data={overview.series} margin={{ left: -20 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
                   <XAxis dataKey="date" tick={{ fontSize: 11, fill: tickFill }} tickFormatter={(d: string) => formatDate(d)} />
                   <YAxis tick={{ fontSize: 11, fill: tickFill }} tickFormatter={(v: number) => formatCurrencyCompact(v)} />
@@ -404,7 +404,7 @@ export function PaymentsRevenuePage() {
             <p className="py-10 text-center text-sm text-muted">No revenue recorded in this period yet.</p>
           ) : (
             <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={overview.byCategory} layout="vertical" margin={{ left: 10 }}>
+              <BarChart accessibilityLayer data={overview.byCategory} layout="vertical" margin={{ left: 10 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} horizontal={false} />
                 <XAxis type="number" tick={{ fontSize: 11, fill: tickFill }} tickFormatter={(v: number) => formatCurrencyCompact(v)} />
                 <YAxis type="category" dataKey="category" tick={{ fontSize: 12, fill: tickFillStrong }} width={70} />

@@ -235,7 +235,7 @@ export function ServicePage() {
             <div className="flex h-[220px] items-center justify-center text-sm text-muted">No jobs in the last 30 days.</div>
           ) : (
             <ResponsiveContainer width="100%" height={220}>
-              <LineChart data={trendData} margin={{ left: -20 }}>
+              <LineChart accessibilityLayer data={trendData} margin={{ left: -20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
                 <XAxis dataKey="day" tick={{ fontSize: 11, fill: tickFill }} />
                 <YAxis tick={{ fontSize: 11, fill: tickFill }} allowDecimals={false} />

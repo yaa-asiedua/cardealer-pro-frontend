@@ -6,6 +6,7 @@ import { api, ApiError } from "../../lib/api-client";
 import { formatCurrency } from "../../lib/format";
 import { vehicleDisplayName } from "../../lib/vehicle-helpers";
 import type { ServiceJob, ServiceType } from "../../types/service";
+import { ModalOverlay } from "../ModalOverlay";
 
 interface CompletePartRow {
   partName: string;
@@ -93,7 +94,7 @@ export function CompleteServiceJobModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-8">
+    <ModalOverlay onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-8">
       <div className="flex max-h-full w-full max-w-2xl flex-col rounded-xl border border-border bg-card shadow-lg">
         <div className="flex items-center justify-between border-b border-border px-6 py-4">
           <div>
@@ -250,6 +251,6 @@ export function CompleteServiceJobModal({
           </div>
         </form>
       </div>
-    </div>
+    </ModalOverlay>
   );
 }

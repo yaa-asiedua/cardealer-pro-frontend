@@ -294,7 +294,7 @@ export function FinanceDashboard({ data }: { data: FinanceDashboardData }) {
               <p className="py-10 text-center text-sm text-muted">No financing activity yet this year.</p>
             ) : (
               <ResponsiveContainer width="100%" height={220}>
-                <BarChart data={chartData}>
+                <BarChart accessibilityLayer data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
                   <XAxis dataKey="month" tick={{ fill: tickFill, fontSize: 12 }} />
                   <YAxis tick={{ fill: tickFill, fontSize: 12 }} tickFormatter={(v) => formatCurrencyCompact(v)} />

@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { ReactNode } from "react";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { useToast } from "../context/ToastContext";
+import { ModalOverlay } from "./ModalOverlay";
 
 interface ConfirmDialogProps {
   title: string;
@@ -42,7 +43,7 @@ export function ConfirmDialog({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+    <ModalOverlay onClose={isSubmitting ? undefined : onCancel}>
       <div className="w-full max-w-md rounded-xl border border-border bg-card p-6 shadow-lg">
         <div className="flex items-start gap-3">
           <div
@@ -88,6 +89,6 @@ export function ConfirmDialog({
           </button>
         </div>
       </div>
-    </div>
+    </ModalOverlay>
   );
 }

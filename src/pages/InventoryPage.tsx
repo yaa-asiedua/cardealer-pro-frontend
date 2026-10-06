@@ -11,6 +11,7 @@ import { api, ApiError } from "../lib/api-client";
 import { formatCurrency, formatDate } from "../lib/format";
 import { deriveVehiclePurpose, vehicleDisplayName } from "../lib/vehicle-helpers";
 import type { Vehicle, VehicleListResult, VehiclePurpose, VehicleStatus } from "../types/vehicle";
+import { useEscapeKey } from "../lib/use-escape-key";
 
 const AGING_THRESHOLD_DAYS = 90;
 
@@ -49,6 +50,7 @@ export function InventoryPage() {
   const [statusDialogVehicle, setStatusDialogVehicle] = useState<Vehicle | null>(null);
   const [deleteVehicle, setDeleteVehicle] = useState<Vehicle | null>(null);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  useEscapeKey(openMenuId !== null, () => setOpenMenuId(null));
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 350);
@@ -284,6 +286,7 @@ export function InventoryPage() {
                         <button
                           type="button"
                           onClick={() => setOpenMenuId(openMenuId === vehicle.id ? null : vehicle.id)}
+                          aria-expanded={openMenuId === vehicle.id}
                           className="rounded-lg p-1.5 text-muted hover:bg-surface hover:text-ink"
                           aria-label="Actions"
                         >

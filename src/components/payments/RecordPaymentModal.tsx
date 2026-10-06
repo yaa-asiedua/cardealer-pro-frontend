@@ -7,6 +7,7 @@ import { formatCurrency } from "../../lib/format";
 import { paymentMethodLabel } from "../../lib/revenue-helpers";
 import { vehicleDisplayName } from "../../lib/vehicle-helpers";
 import type { Sale, SaleListResult } from "../../types/sale";
+import { ModalOverlay } from "../ModalOverlay";
 
 export type PaymentType = "SALE" | "RENTAL" | "FINANCING" | "SERVICE";
 
@@ -78,7 +79,7 @@ export function RecordPaymentModal({ onClose, onRecorded, initialType, initialFi
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+    <ModalOverlay onClose={onClose}>
       <div className="w-full max-w-lg rounded-xl border border-border bg-card p-6 shadow-lg">
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold text-ink">Record Payment</h2>
@@ -117,7 +118,7 @@ export function RecordPaymentModal({ onClose, onRecorded, initialType, initialFi
           </div>
         )}
       </div>
-    </div>
+    </ModalOverlay>
   );
 }
 

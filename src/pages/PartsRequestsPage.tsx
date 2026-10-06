@@ -10,6 +10,7 @@ import { useChartTheme } from "../lib/chart-theme";
 import { formatCurrency, formatDateTime } from "../lib/format";
 import { vehicleDisplayName } from "../lib/vehicle-helpers";
 import type { PartRequest, PartRequestListResult, PartRequestStatus, ServiceJob, ServiceJobListResult } from "../types/service";
+import { ModalOverlay } from "../components/ModalOverlay";
 
 type Tab = "" | PartRequestStatus;
 const TABS: { key: Tab; label: string }[] = [
@@ -424,7 +425,7 @@ export function PartsRequestsPage() {
             <p className="py-10 text-center text-sm text-muted">No requests yet.</p>
           ) : (
             <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={partBreakdown}>
+              <BarChart accessibilityLayer data={partBreakdown}>
                 <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
                 <XAxis dataKey="name" tick={{ fill: tickFill, fontSize: 11 }} interval={0} angle={-20} textAnchor="end" height={50} />
                 <YAxis allowDecimals={false} tick={{ fill: tickFill, fontSize: 12 }} />
@@ -441,7 +442,7 @@ export function PartsRequestsPage() {
       </div>
 
       {pickingJob && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+        <ModalOverlay onClose={() => setPickingJob(false)}>
           <div className="w-full max-w-sm rounded-xl border border-border bg-card p-6 shadow-lg">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-base font-semibold text-ink">Select a Job</h2>
@@ -475,7 +476,7 @@ export function PartsRequestsPage() {
               </ul>
             )}
           </div>
-        </div>
+        </ModalOverlay>
       )}
 
       {requestingPartsJob && (
