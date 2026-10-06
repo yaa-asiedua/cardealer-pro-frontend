@@ -40,7 +40,7 @@ export function ForgotPasswordPage() {
             No email provider is configured in this dev environment — the reset link is written to the backend
             server's console log instead of actually being emailed.
           </p>
-          <Link to="/login" className="mt-6 flex items-center gap-1.5 text-sm font-medium text-action hover:underline">
+          <Link to="/login" className="touch-target mt-6 flex items-center gap-1.5 text-sm font-medium text-action hover:underline">
             <ArrowLeft size={14} /> Back to login
           </Link>
         </div>
@@ -91,7 +91,7 @@ export function ForgotPasswordPage() {
         </button>
       </form>
 
-      <Link to="/login" className="mt-6 flex items-center justify-center gap-1.5 text-sm font-medium text-action hover:underline">
+      <Link to="/login" className="touch-target mt-6 flex items-center justify-center gap-1.5 text-sm font-medium text-action hover:underline">
         <ArrowLeft size={14} /> Back to login
       </Link>
     </AuthLayout>

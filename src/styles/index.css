@@ -39,3 +39,71 @@ body {
   outline-offset: 2px;
   border-radius: 0.375rem;
 }
+
+/* iOS Safari zooms the whole page in when a form field under 16px is
+   focused, and doesn't zoom back out — every field here is text-sm
+   (14px). Scoped to touch screens (not a width breakpoint) so the desktop
+   layout is untouched; !important because it has to beat Tailwind's
+   .text-sm utility class. Deliberately not done via maximum-scale=1 in
+   the viewport meta, which would also block pinch-zoom. */
+@media (pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Touch screens only: give every button, and the small text links tagged
+   .touch-target ("View all →", "Back to …", "Forgot Password?"), at least
+   a 40x40px tap area — the mobile audit found 164 targets under 32px
+   (30px status-tab pills, 28px row-Actions buttons, a 16px show-password
+   eye). Desktop sizes are unchanged. */
+@media (pointer: coarse) {
+  button,
+  [role="button"] {
+    min-height: 40px;
+    min-width: 40px;
+  }
+  .touch-target {
+    display: flex;
+    align-items: center;
+    min-height: 40px;
+  }
+}
+
+/* Narrow screens: pin a table's last (row-actions) column to the right
+   edge of its horizontally-scrolling card, so Edit/Delete/status actions
+   are always visible instead of starting off-screen (mobile audit). The
+   left-edge shadow doubles as the "this scrolls" cue. Background matches
+   the card, and the row's hover tint. Tables opt in with .sticky-actions;
+   colSpan cells (empty/loading rows) are left alone. */
+@media (max-width: 1023px) {
+  table.sticky-actions th:last-child,
+  table.sticky-actions td:last-child:not([colspan]) {
+    position: sticky;
+    right: 0;
+    z-index: 1;
+    background-color: rgb(var(--color-card));
+    box-shadow: -8px 0 8px -8px rgb(0 0 0 / 0.35);
+  }
+  table.sticky-actions tbody tr:hover td:last-child:not([colspan]) {
+    background-color: rgb(var(--color-surface));
+  }
+}
+
+/* Phones: drop low-value columns from the tables used on the move, so
+   the key columns fit without sideways scrolling. A table opts in per
+   column number (phone-hide-3 hides column 3 in header and body alike,
+   so they can't drift apart). colSpan rows are a single cell and stay. */
+@media (max-width: 639px) {
+  table.phone-hide-2 > * > tr > :nth-child(2),
+  table.phone-hide-3 > * > tr > :nth-child(3),
+  table.phone-hide-4 > * > tr > :nth-child(4),
+  table.phone-hide-5 > * > tr > :nth-child(5),
+  table.phone-hide-6 > * > tr > :nth-child(6),
+  table.phone-hide-7 > * > tr > :nth-child(7),
+  table.phone-hide-8 > * > tr > :nth-child(8) {
+    display: none;
+  }
+}

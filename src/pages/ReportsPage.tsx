@@ -514,7 +514,7 @@ function SalesReportView({ report }: { report: SalesReport | null }) {
   if (!report) return <EmptyState />;
   return (
     <div className="mt-6 flex flex-col gap-4">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3">
         <KpiCard label="Sales Count" value={String(report.totals.count)} icon={Banknote} />
         <KpiCard label="Revenue" value={formatCurrencyCompact(report.totals.revenue)} icon={Wallet} />
         <KpiCard label="Commission" value={formatCurrencyCompact(report.totals.commission)} icon={Percent} />
@@ -533,7 +533,7 @@ function RentalsReportView({ report }: { report: RentalsReport | null }) {
   if (!report) return <EmptyState />;
   return (
     <div className="mt-6 flex flex-col gap-4">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2">
         <KpiCard label="Booking Count" value={String(report.totals.bookingCount)} icon={Repeat} />
         <KpiCard label="Revenue" value={formatCurrencyCompact(report.totals.revenue)} icon={Wallet} />
       </div>
@@ -551,7 +551,7 @@ function ServiceReportView({ report }: { report: ServiceReport | null }) {
   if (!report) return <EmptyState />;
   return (
     <div className="mt-6 flex flex-col gap-4">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2">
         <KpiCard label="Jobs Completed" value={String(report.totals.jobCount)} icon={CheckCircle2} />
         <KpiCard label="Revenue" value={formatCurrencyCompact(report.totals.revenue)} icon={Wrench} />
       </div>
@@ -581,7 +581,7 @@ function RevenueReportView({ report }: { report: RevenueOverview | null }) {
   if (!report) return <EmptyState />;
   return (
     <div className="mt-6 flex flex-col gap-4">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <KpiCard label="Total Revenue" value={formatCurrencyCompact(report.totals.total)} icon={TrendingUp} />
         <KpiCard label="Sales" value={formatCurrencyCompact(report.totals.sales)} icon={Banknote} />
         <KpiCard label="Rentals" value={formatCurrencyCompact(report.totals.rentals)} icon={Repeat} />

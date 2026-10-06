@@ -157,7 +157,7 @@ export function CompleteServiceJobModal({
                       className="rounded-lg border border-border bg-card px-2 py-1.5 text-sm text-ink outline-none focus:border-action focus:ring-1 focus:ring-action"
                     />
                     <input
-                      type="number"
+                      type="number" inputMode="numeric"
                       min={1}
                       placeholder="Qty"
                       value={p.quantity}
@@ -165,7 +165,7 @@ export function CompleteServiceJobModal({
                       className="rounded-lg border border-border bg-card px-2 py-1.5 text-sm text-ink outline-none focus:border-action focus:ring-1 focus:ring-action"
                     />
                     <input
-                      type="number"
+                      type="number" inputMode="decimal"
                       min={0}
                       step="0.01"
                       placeholder="Unit (GHS)"
@@ -194,7 +194,7 @@ export function CompleteServiceJobModal({
               <label className="flex flex-col gap-1 text-sm">
                 <span className="text-xs font-medium text-ink">Labour Cost (GHS)</span>
                 <input
-                  type="number"
+                  type="number" inputMode="decimal"
                   min={0}
                   step="0.01"
                   value={labourCost}

@@ -227,7 +227,7 @@ export function RentalPaymentsPage() {
         </button>
       </div>
 
-      <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-4 grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard
           label="Total Payments (This Period)"
           value={formatCurrencyCompact(thisMonthRevenue ?? 0)}

@@ -200,7 +200,7 @@ export function RentalsDashboard({ data }: { data: RentalsDashboardData }) {
         <p className="text-sm text-muted">Manage your rental operations, customers and upcoming returns.</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <KpiCard label="Available Vehicles" value={String(data.availableRentalVehicles)} sublabel="Ready to rent" icon={Car} />
         <KpiCard
           label="Currently Rented"
@@ -326,7 +326,7 @@ export function RentalsDashboard({ data }: { data: RentalsDashboardData }) {
             <p className="py-6 text-center text-sm text-muted">No rentals due for return today.</p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="sticky-actions w-full text-sm">
                 <thead>
                   <tr className="text-left text-xs uppercase tracking-wide text-muted">
                     <th className="pb-2 font-semibold">Customer</th>
@@ -368,7 +368,7 @@ export function RentalsDashboard({ data }: { data: RentalsDashboardData }) {
             <p className="py-6 text-center text-sm text-muted">No overdue rentals.</p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="sticky-actions w-full text-sm">
                 <thead>
                   <tr className="text-left text-xs uppercase tracking-wide text-muted">
                     <th className="pb-2 font-semibold">Customer</th>

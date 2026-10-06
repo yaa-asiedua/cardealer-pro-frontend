@@ -99,7 +99,7 @@ export function TransfersPage() {
 
   return (
     <div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard label="Total Transfers" value={kpis ? String(kpis.total) : "—"} icon={ClipboardList} />
         <KpiCard label="Pending" value={kpis ? String(kpis.pending) : "—"} sublabel="Documents not yet collected/submitted" icon={Clock} tone="warning" />
         <KpiCard label="Submitted to Registry" value={kpis ? String(kpis.submitted) : "—"} icon={SendHorizonal} />
@@ -324,7 +324,7 @@ function TransfersTab({
 
       <div className="mt-4 rounded-xl border border-border bg-card shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="sticky-actions w-full text-sm">
             <thead>
               <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted">
                 <th className="px-4 py-3 font-semibold">Transfer Ref</th>
@@ -454,7 +454,7 @@ function TransfersTab({
           extraContent={
             <div className="flex flex-col gap-2">
               <input
-                type="number"
+                type="number" inputMode="decimal"
                 min={0}
                 step="0.01"
                 placeholder="Transfer fee (GHS, optional)"

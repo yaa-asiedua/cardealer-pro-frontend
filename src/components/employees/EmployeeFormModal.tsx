@@ -183,7 +183,7 @@ export function EmployeeFormModal({ employeeId, onClose, onSaved }: EmployeeForm
                   </label>
                   <label className="flex flex-col gap-1 text-sm">
                     <span className="text-xs font-medium text-ink">Phone</span>
-                    <input value={phone} onChange={(e) => setPhone(e.target.value)} className={inputCls} />
+                    <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className={inputCls} />
                   </label>
                   <label className="flex flex-col gap-1 text-sm">
                     <span className="text-xs font-medium text-ink">Email</span>
@@ -226,7 +226,7 @@ export function EmployeeFormModal({ employeeId, onClose, onSaved }: EmployeeForm
                     <label className="flex flex-col gap-1 text-sm">
                       <span className="text-xs font-medium text-ink">Commission rate (%)</span>
                       <input
-                        type="number"
+                        type="number" inputMode="decimal"
                         min={0}
                         max={100}
                         step="0.1"

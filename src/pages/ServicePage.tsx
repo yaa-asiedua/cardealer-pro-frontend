@@ -220,7 +220,7 @@ export function ServicePage() {
 
   return (
     <div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <KpiCard label="Pending Jobs" value={kpis ? String(kpis.pending) : "—"} icon={Clock} tone="warning" />
         <KpiCard label="In Progress" value={kpis ? String(kpis.inProgress) : "—"} icon={Wrench} />
         <KpiCard label="Completed" value={kpis ? String(kpis.completed) : "—"} icon={CheckCircle2} tone="success" />
@@ -583,7 +583,7 @@ function JobsTab({
 
       <div className="mt-4 rounded-xl border border-border bg-card shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="sticky-actions w-full text-sm">
             <thead>
               <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted">
                 <th className="px-4 py-3 font-semibold">Job ID</th>
@@ -809,7 +809,7 @@ function PartsRequestsTab({ onChanged }: { onChanged: () => void }) {
 
       <div className="mt-4 rounded-xl border border-border bg-card shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="sticky-actions w-full text-sm">
             <thead>
               <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted">
                 <th className="px-4 py-3 font-semibold">Request ID</th>

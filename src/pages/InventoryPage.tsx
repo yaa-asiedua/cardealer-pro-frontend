@@ -11,7 +11,7 @@ import { api, ApiError } from "../lib/api-client";
 import { formatCurrency, formatDate } from "../lib/format";
 import { deriveVehiclePurpose, vehicleDisplayName } from "../lib/vehicle-helpers";
 import type { Vehicle, VehicleListResult, VehiclePurpose, VehicleStatus } from "../types/vehicle";
-import { useEscapeKey } from "../lib/use-escape-key";
+import { RowMenu } from "../components/RowMenu";
 
 const AGING_THRESHOLD_DAYS = 90;
 
@@ -50,7 +50,7 @@ export function InventoryPage() {
   const [statusDialogVehicle, setStatusDialogVehicle] = useState<Vehicle | null>(null);
   const [deleteVehicle, setDeleteVehicle] = useState<Vehicle | null>(null);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
-  useEscapeKey(openMenuId !== null, () => setOpenMenuId(null));
+  const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 350);
@@ -131,7 +131,7 @@ export function InventoryPage() {
 
   return (
     <div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <KpiCard label="Total vehicles" value={kpis ? String(kpis.total) : "—"} icon={Car} />
         <KpiCard label="Available" value={kpis ? String(kpis.available) : "—"} icon={Car} tone="success" />
         <KpiCard label="For sale" value={kpis ? String(kpis.forSale) : "—"} icon={ShoppingCart} />
@@ -147,7 +147,7 @@ export function InventoryPage() {
             {agingCount} vehicle{agingCount === 1 ? "" : "s"} have been in stock for more than {AGING_THRESHOLD_DAYS} days.
             Consider reviewing pricing or assigning them for rental.
           </span>
-          <Link to="/reports" className="whitespace-nowrap font-medium text-action hover:underline">
+          <Link to="/reports" className="touch-target whitespace-nowrap font-medium text-action hover:underline">
             View Full Report
           </Link>
         </div>
@@ -208,7 +208,7 @@ export function InventoryPage() {
 
       <div className="mt-4 rounded-xl border border-border bg-card shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="phone-hide-2 phone-hide-3 phone-hide-4 phone-hide-7 sticky-actions w-full text-sm">
             <thead>
               <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted">
                 <th className="px-4 py-3 font-semibold">Vehicle</th>
@@ -282,52 +282,52 @@ export function InventoryPage() {
                         <StatusBadge status={vehicle.status} />
                       </td>
                       <td className="px-4 py-3 text-xs text-muted">{formatDate(vehicle.createdAt)}</td>
-                      <td className="relative px-4 py-3 text-right">
+                      <td className="px-4 py-3 text-right">
                         <button
                           type="button"
-                          onClick={() => setOpenMenuId(openMenuId === vehicle.id ? null : vehicle.id)}
+                          onClick={(e) => {
+                            setMenuAnchor(e.currentTarget);
+                            setOpenMenuId(openMenuId === vehicle.id ? null : vehicle.id);
+                          }}
                           aria-expanded={openMenuId === vehicle.id}
                           className="rounded-lg p-1.5 text-muted hover:bg-surface hover:text-ink"
                           aria-label="Actions"
                         >
                           <MoreVertical size={16} />
                         </button>
-                        {openMenuId === vehicle.id && (
-                          <>
-                            <div className="fixed inset-0 z-10" onClick={() => setOpenMenuId(null)} />
-                            <div className="absolute right-4 top-10 z-20 w-44 rounded-xl border border-border bg-card py-1 text-left shadow-lg">
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setOpenMenuId(null);
-                                  navigate(`/inventory/${vehicle.id}/edit`);
-                                }}
-                                className="block w-full px-3 py-2 text-sm text-ink hover:bg-surface"
-                              >
-                                View / Edit
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setOpenMenuId(null);
-                                  setStatusDialogVehicle(vehicle);
-                                }}
-                                className="block w-full px-3 py-2 text-sm text-ink hover:bg-surface"
-                              >
-                                Change Status
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setOpenMenuId(null);
-                                  setDeleteVehicle(vehicle);
-                                }}
-                                className="block w-full px-3 py-2 text-sm text-danger hover:bg-surface"
-                              >
-                                Delete
-                              </button>
-                            </div>
-                          </>
+                        {openMenuId === vehicle.id && menuAnchor && (
+                          <RowMenu anchor={menuAnchor} onClose={() => setOpenMenuId(null)} className="w-44">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setOpenMenuId(null);
+                                navigate(`/inventory/${vehicle.id}/edit`);
+                              }}
+                              className="block w-full px-3 py-2 text-sm text-ink hover:bg-surface"
+                            >
+                              View / Edit
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setOpenMenuId(null);
+                                setStatusDialogVehicle(vehicle);
+                              }}
+                              className="block w-full px-3 py-2 text-sm text-ink hover:bg-surface"
+                            >
+                              Change Status
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setOpenMenuId(null);
+                                setDeleteVehicle(vehicle);
+                              }}
+                              className="block w-full px-3 py-2 text-sm text-danger hover:bg-surface"
+                            >
+                              Delete
+                            </button>
+                          </RowMenu>
                         )}
                       </td>
                     </tr>

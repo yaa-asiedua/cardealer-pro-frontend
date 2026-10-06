@@ -47,7 +47,7 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
     <div>
       <AlertBanner alerts={alerts} />
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <KpiCard
           label="Sales this month"
           value={formatCurrencyCompact(data.salesThisMonth.revenue)}
@@ -78,7 +78,7 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
             <div className="flex h-[260px] flex-col items-center justify-center gap-1 text-center">
               <Boxes size={22} className="text-muted" />
               <p className="text-sm text-muted">No vehicles in inventory yet.</p>
-              <Link to="/inventory" className="text-xs font-medium text-action hover:underline">
+              <Link to="/inventory" className="touch-target text-xs font-medium text-action hover:underline">
                 Add a vehicle →
               </Link>
             </div>

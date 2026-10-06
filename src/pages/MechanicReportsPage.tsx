@@ -279,7 +279,7 @@ export function MechanicReportsPage() {
         </button>
       </div>
 
-      <div id="summary" className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div id="summary" className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard
           label="Total Service Jobs"
           value={String(cohort.thisMonth.total)}

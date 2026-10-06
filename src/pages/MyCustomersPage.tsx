@@ -9,7 +9,7 @@ import { customerDisplayName } from "../types/customer";
 import type { Customer, CustomerListResult, CustomerStatus, CustomerType } from "../types/customer";
 import type { SaleListResult } from "../types/sale";
 import type { ReactNode } from "react";
-import { useEscapeKey } from "../lib/use-escape-key";
+import { RowMenu } from "../components/RowMenu";
 
 interface Kpis {
   total: number;
@@ -54,7 +54,7 @@ export function MyCustomersPage() {
   const [selected, setSelected] = useState<Customer | null>(null);
   const [isLoadingDetail, setIsLoadingDetail] = useState(false);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
-  useEscapeKey(openMenuId !== null, () => setOpenMenuId(null));
+  const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 350);
@@ -127,7 +127,7 @@ export function MyCustomersPage() {
         <p className="text-sm text-muted">Manage your assigned customers and track their purchase history.</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard label="Total Customers" value={kpis ? String(kpis.total) : "—"} icon={Users} />
         <KpiCard label="Active Customers" value={kpis ? String(kpis.active) : "—"} icon={UserCheck} tone="success" />
         <KpiCard label="New This Month" value={kpis ? String(kpis.newThisMonth) : "—"} icon={Plus} />
@@ -185,7 +185,7 @@ export function MyCustomersPage() {
       <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
         <div className="rounded-xl border border-border bg-card shadow-sm lg:col-span-2">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="sticky-actions w-full text-sm">
               <thead>
                 <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted">
                   <th className="px-4 py-3 font-semibold">Customer</th>
@@ -251,29 +251,29 @@ export function MyCustomersPage() {
                       <td className="relative px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
                         <button
                           type="button"
-                          onClick={() => setOpenMenuId(openMenuId === c.id ? null : c.id)}
+                          onClick={(e) => {
+                            setMenuAnchor(e.currentTarget);
+                            setOpenMenuId(openMenuId === c.id ? null : c.id);
+                          }}
                           aria-expanded={openMenuId === c.id}
                           className="rounded-lg p-1.5 text-muted hover:bg-surface hover:text-ink"
                           aria-label="Actions"
                         >
                           <MoreVertical size={16} />
                         </button>
-                        {openMenuId === c.id && (
-                          <>
-                            <div className="fixed inset-0 z-10" onClick={() => setOpenMenuId(null)} />
-                            <div className="absolute right-4 top-10 z-20 w-36 rounded-xl border border-border bg-card py-1 text-left shadow-lg">
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setOpenMenuId(null);
-                                  selectCustomer(c.id);
-                                }}
-                                className="block w-full px-3 py-2 text-left text-sm text-ink hover:bg-surface"
-                              >
-                                View Details
-                              </button>
-                            </div>
-                          </>
+                        {openMenuId === c.id && menuAnchor && (
+                          <RowMenu anchor={menuAnchor} onClose={() => setOpenMenuId(null)} className="w-36">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setOpenMenuId(null);
+                                selectCustomer(c.id);
+                              }}
+                              className="block w-full px-3 py-2 text-left text-sm text-ink hover:bg-surface"
+                            >
+                              View Details
+                            </button>
+                          </RowMenu>
                         )}
                       </td>
                     </tr>

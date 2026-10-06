@@ -71,7 +71,7 @@ export function LoginPage() {
             <label htmlFor="password" className="block text-sm font-medium text-ink">
               Password
             </label>
-            <Link to="/forgot-password" className="text-xs font-medium text-action hover:underline">
+            <Link to="/forgot-password" className="touch-target text-xs font-medium text-action hover:underline">
               Forgot Password?
             </Link>
           </div>

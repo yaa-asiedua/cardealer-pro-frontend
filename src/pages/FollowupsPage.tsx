@@ -143,7 +143,7 @@ export function FollowupsPage() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard label="Total Follow-ups" value={String(counts.total)} icon={Users} />
         <KpiCard label="Due Today" value={String(counts.dueToday)} icon={Clock} tone={counts.dueToday > 0 ? "warning" : "default"} />
         <KpiCard label="Completed" value={String(counts.completed)} icon={CheckSquare} tone="success" />
@@ -198,7 +198,7 @@ export function FollowupsPage() {
 
           <div className="overflow-hidden rounded-xl border border-border bg-card">
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="sticky-actions w-full text-sm">
                 <thead>
                   <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted">
                     <th className="px-4 py-3 font-semibold">Customer</th>

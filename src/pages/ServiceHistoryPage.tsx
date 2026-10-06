@@ -264,7 +264,7 @@ export function ServiceHistoryPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard label="Total Service Records" value={String(tabCounts[""] ?? "—")} sublabel="All-time" icon={History} />
         <KpiCard label="Vehicles Serviced" value={String(vehiclesServiced)} sublabel="Among recent records" icon={Car} />
         <KpiCard
@@ -506,18 +506,20 @@ export function ServiceHistoryPage() {
           {typeBreakdown.length === 0 ? (
             <p className="py-10 text-center text-sm text-muted">No completed jobs in the last 6 months.</p>
           ) : (
-            <div className="flex items-center gap-4">
-              <ResponsiveContainer width="50%" height={160}>
-                <PieChart>
-                  <Pie data={typeBreakdown} dataKey="count" nameKey="name" innerRadius={44} outerRadius={70} paddingAngle={2}>
-                    {typeBreakdown.map((_, i) => (
-                      <Cell key={i} fill={TYPE_COLORS[i % TYPE_COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="flex-1">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+              <div className="w-full sm:w-1/2">
+                <ResponsiveContainer width="100%" height={160}>
+                  <PieChart>
+                    <Pie data={typeBreakdown} dataKey="count" nameKey="name" innerRadius={44} outerRadius={70} paddingAngle={2}>
+                      {typeBreakdown.map((_, i) => (
+                        <Cell key={i} fill={TYPE_COLORS[i % TYPE_COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="w-full sm:flex-1">
                 <div className="text-2xl font-semibold tabular-nums text-ink">{completedJobs.length}</div>
                 <p className="mb-2 text-xs text-muted">Records (last 6 months, up to 100)</p>
                 <ul className="flex flex-col gap-1.5 text-xs">

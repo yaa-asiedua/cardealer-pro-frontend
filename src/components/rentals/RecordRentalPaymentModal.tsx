@@ -109,7 +109,7 @@ export function RecordRentalPaymentModal({ onClose, onRecorded }: RecordRentalPa
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs font-medium text-muted">Amount</label>
-                  <input type="number" min="0" step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} className={fieldClass()} />
+                  <input type="number" inputMode="decimal" min="0" step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} className={fieldClass()} />
                 </div>
                 <div>
                   <label className="text-xs font-medium text-muted">Method</label>

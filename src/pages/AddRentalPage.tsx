@@ -255,7 +255,7 @@ export function AddRentalPage() {
 
   return (
     <div>
-      <Link to="/rentals" className="mb-4 flex w-fit items-center gap-1.5 text-sm font-medium text-action hover:underline">
+      <Link to="/rentals" className="touch-target mb-4 flex w-fit items-center gap-1.5 text-sm font-medium text-action hover:underline">
         <Car size={14} className="rotate-180" /> Back to My Rentals
       </Link>
 
@@ -394,7 +394,7 @@ export function AddRentalPage() {
                         onChange={(e) => setNewCustomer((c) => ({ ...c, lastName: e.target.value }))}
                         className={inputCls}
                       />
-                      <input
+                      <input type="tel"
                         placeholder="Phone"
                         value={newCustomer.phone}
                         onChange={(e) => setNewCustomer((c) => ({ ...c, phone: e.target.value }))}
@@ -550,7 +550,7 @@ export function AddRentalPage() {
               <Field label="Daily Rate (GHS)" required>
                 <input
                   required
-                  type="number"
+                  type="number" inputMode="decimal"
                   min={0}
                   step="0.01"
                   value={dailyRate}
@@ -560,7 +560,7 @@ export function AddRentalPage() {
               </Field>
               <Field label="Discount (GHS)">
                 <input
-                  type="number"
+                  type="number" inputMode="decimal"
                   min={0}
                   step="0.01"
                   value={discount}
@@ -575,7 +575,7 @@ export function AddRentalPage() {
               </Field>
               <Field label="Deposit (GHS)">
                 <input
-                  type="number"
+                  type="number" inputMode="decimal"
                   min={0}
                   step="0.01"
                   value={depositAmount}
@@ -655,7 +655,7 @@ export function AddRentalPage() {
                 {(!customer.idType || !customer.idNumber || !customer.driverLicenseNo) && (
                   <p className="mt-3 text-xs text-muted">
                     Missing details can be added on the customer's{" "}
-                    <Link to={`/customers/${customer.id}/edit`} target="_blank" className="font-medium text-action hover:underline">
+                    <Link to={`/customers/${customer.id}/edit`} target="_blank" className="touch-target font-medium text-action hover:underline">
                       profile page
                     </Link>
                     .
@@ -840,8 +840,11 @@ function StepCard({
 
 function StepNextButton({ visible, disabled, onClick }: { visible: boolean; disabled: boolean; onClick: () => void }) {
   if (!visible) return null;
+  // Hidden on phones: there the sticky footer's "Next" is always on screen
+  // and runs the same goNext(), so this second forward button was just a
+  // duplicate (mobile audit).
   return (
-    <div className="mt-4 flex justify-end">
+    <div className="mt-4 hidden justify-end sm:flex">
       <button
         type="button"
         onClick={onClick}

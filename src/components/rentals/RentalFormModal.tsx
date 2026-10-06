@@ -270,7 +270,7 @@ export function RentalFormModal({ onClose, onSaved }: RentalFormModalProps) {
                       onChange={(e) => setNewCustomer((c) => ({ ...c, lastName: e.target.value }))}
                       className={inputCls}
                     />
-                    <input
+                    <input type="tel"
                       placeholder="Phone"
                       value={newCustomer.phone}
                       onChange={(e) => setNewCustomer((c) => ({ ...c, phone: e.target.value }))}
@@ -361,7 +361,7 @@ export function RentalFormModal({ onClose, onSaved }: RentalFormModalProps) {
                   <span className="text-xs font-medium text-ink">Daily rate (GHS)</span>
                   <input
                     required
-                    type="number"
+                    type="number" inputMode="decimal"
                     min={0}
                     step="0.01"
                     value={dailyRate}
@@ -372,7 +372,7 @@ export function RentalFormModal({ onClose, onSaved }: RentalFormModalProps) {
                 <label className="flex flex-col gap-1 text-sm">
                   <span className="text-xs font-medium text-ink">Deposit (GHS)</span>
                   <input
-                    type="number"
+                    type="number" inputMode="decimal"
                     min={0}
                     step="0.01"
                     value={depositAmount}

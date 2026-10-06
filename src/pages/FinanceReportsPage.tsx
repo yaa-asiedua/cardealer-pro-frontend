@@ -327,7 +327,7 @@ export function FinanceReportsPage() {
         </button>
       </div>
 
-      <div id="financing-summary" className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div id="financing-summary" className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard
           label="Total Financed Amount"
           value={formatCurrencyCompact(thisMonthFinanced ?? 0)}

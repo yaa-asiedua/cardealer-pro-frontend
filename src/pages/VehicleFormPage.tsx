@@ -277,7 +277,7 @@ export function VehicleFormPage() {
 
   return (
     <div>
-      <Link to="/inventory" className="mb-4 flex w-fit items-center gap-1.5 text-sm font-medium text-action hover:underline">
+      <Link to="/inventory" className="touch-target mb-4 flex w-fit items-center gap-1.5 text-sm font-medium text-action hover:underline">
         <ArrowLeft size={14} /> Back to Inventory
       </Link>
 
@@ -343,7 +343,7 @@ export function VehicleFormPage() {
             <Field label="Year" required>
               <input
                 required
-                type="number"
+                type="number" inputMode="numeric"
                 value={values.year}
                 onChange={(e) => update("year", Number(e.target.value))}
                 className={inputCls}
@@ -378,7 +378,7 @@ export function VehicleFormPage() {
             </Field>
             <Field label="Mileage (km)">
               <input
-                type="number"
+                type="number" inputMode="numeric"
                 min={0}
                 value={values.mileage}
                 onChange={(e) => update("mileage", e.target.value)}
@@ -444,7 +444,7 @@ export function VehicleFormPage() {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <Field label="Purchase Price (GHS)">
                   <input
-                    type="number"
+                    type="number" inputMode="decimal"
                     min={0}
                     step="0.01"
                     value={values.purchasePrice}
@@ -455,7 +455,7 @@ export function VehicleFormPage() {
                 <Field label="Selling Price (GHS)" required>
                   <input
                     required
-                    type="number"
+                    type="number" inputMode="decimal"
                     min={0}
                     step="0.01"
                     value={values.sellingPrice}
@@ -488,7 +488,7 @@ export function VehicleFormPage() {
                 <Field label="Daily Rental Rate (GHS)" required>
                   <input
                     required
-                    type="number"
+                    type="number" inputMode="decimal"
                     min={0}
                     step="0.01"
                     value={values.rentalDailyRate}

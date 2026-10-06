@@ -184,7 +184,7 @@ function BusinessSettingsTab() {
         </label>
         <label className="flex flex-col gap-1 text-sm">
           <span className="text-xs font-medium text-ink">Business Phone</span>
-          <input value={businessPhone} onChange={(e) => setBusinessPhone(e.target.value)} className={inputCls} />
+          <input type="tel" value={businessPhone} onChange={(e) => setBusinessPhone(e.target.value)} className={inputCls} />
         </label>
         <label className="flex flex-col gap-1 text-sm">
           <span className="text-xs font-medium text-ink">

@@ -13,7 +13,7 @@ export function NotFoundPage() {
       <ShieldAlert size={32} className="text-muted" />
       <h1 className="text-lg font-semibold text-ink">Access denied</h1>
       <p className="text-sm text-muted">This page doesn't exist or isn't available for your role.</p>
-      <Link to="/dashboard" className="mt-2 text-sm font-medium text-action hover:underline">
+      <Link to="/dashboard" className="touch-target mt-2 text-sm font-medium text-action hover:underline">
         Back to dashboard
       </Link>
     </div>

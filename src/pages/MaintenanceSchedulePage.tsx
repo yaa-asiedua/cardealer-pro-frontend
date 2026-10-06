@@ -212,7 +212,7 @@ export function MaintenanceSchedulePage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3">
         <KpiCard
           label="New Reminders Set"
           value={String(newRemindersCohort.thisMonth)}
@@ -359,7 +359,7 @@ export function MaintenanceSchedulePage() {
                 <ChevronRight size={16} />
               </button>
             </div>
-            <div className="grid grid-cols-7 gap-1 text-center text-[10px] text-muted">
+            <div className="grid grid-cols-7 gap-1 text-center text-xs text-muted">
               {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((d) => (
                 <div key={d}>{d}</div>
               ))}

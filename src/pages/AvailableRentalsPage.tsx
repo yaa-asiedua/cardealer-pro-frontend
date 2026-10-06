@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AlertCircle, Calendar, Car, Fuel, LayoutGrid, List, Loader2, Plus, RotateCcw, Search, Settings2, Users } from "lucide-react";
+import { AlertCircle, Calendar, Car, Fuel, LayoutGrid, List, Loader2, Plus, RotateCcw, Search, Settings2, SlidersHorizontal, Users } from "lucide-react";
 import { KpiCard } from "../components/dashboard/KpiCard";
 import { VehicleDetailModal } from "../components/rentals/VehicleDetailModal";
 import { StatusBadge } from "../components/StatusBadge";
@@ -114,6 +114,13 @@ export function AvailableRentalsPage() {
 
   useEffect(loadKpis, [loadKpis]);
 
+  // Phones show only the search box plus a "Filters" toggle — the full
+  // panel took a whole screen before the first vehicle (mobile audit).
+  // From sm up the panel is always open.
+  const [showFilters, setShowFilters] = useState(false);
+  const activeFilterCount = [vehicleType, make, transmission, seats, priceMin, priceMax].filter(Boolean).length;
+  const advCls = showFilters ? "" : "hidden sm:block";
+
   function resetFilters() {
     setSearch("");
     setVehicleType("");
@@ -147,7 +154,7 @@ export function AvailableRentalsPage() {
         </button>
       </div>
 
-      <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-4 grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard label="Available Now" value={availableNow !== null ? String(availableNow) : "—"} icon={Car} />
         <KpiCard label="Currently Rented" value={currentlyRented !== null ? String(currentlyRented) : "—"} icon={Users} />
         <KpiCard
@@ -166,16 +173,29 @@ export function AvailableRentalsPage() {
 
       <div className="mb-4 rounded-xl border border-border bg-card p-4">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
-          <div className="relative lg:col-span-2">
-            <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by make, model, or plate number…"
-              className={`${inputCls} pl-9`}
-            />
+          <div className="flex gap-2 lg:col-span-2">
+            <div className="relative flex-1">
+              <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search by make, model, or plate number…"
+                className={`${inputCls} pl-9`}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowFilters((v) => !v)}
+              aria-expanded={showFilters}
+              className={`flex shrink-0 items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium sm:hidden ${
+                showFilters || activeFilterCount > 0 ? "border-action text-action" : "border-border text-ink"
+              }`}
+            >
+              <SlidersHorizontal size={16} />
+              Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
+            </button>
           </div>
-          <select value={vehicleType} onChange={(e) => setVehicleType(e.target.value)} className={inputCls}>
+          <select value={vehicleType} onChange={(e) => setVehicleType(e.target.value)} className={`${inputCls} ${advCls}`}>
             <option value="">All Types</option>
             {typeOptions.map((t) => (
               <option key={t} value={t}>
@@ -183,8 +203,8 @@ export function AvailableRentalsPage() {
               </option>
             ))}
           </select>
-          <input value={make} onChange={(e) => setMake(e.target.value)} placeholder="Make" className={inputCls} />
-          <select value={transmission} onChange={(e) => setTransmission(e.target.value)} className={inputCls}>
+          <input value={make} onChange={(e) => setMake(e.target.value)} placeholder="Make" className={`${inputCls} ${advCls}`} />
+          <select value={transmission} onChange={(e) => setTransmission(e.target.value)} className={`${inputCls} ${advCls}`}>
             <option value="">All Transmissions</option>
             {TRANSMISSION_OPTIONS.map((t) => (
               <option key={t} value={t}>
@@ -194,7 +214,7 @@ export function AvailableRentalsPage() {
           </select>
         </div>
 
-        <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-5">
+        <div className={`mt-3 ${showFilters ? "grid" : "hidden"} sm:grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-5`}>
           <select value={seats} onChange={(e) => setSeats(e.target.value)} className={inputCls}>
             <option value="">Any Seating</option>
             {SEAT_OPTIONS.map((s) => (
@@ -204,14 +224,14 @@ export function AvailableRentalsPage() {
             ))}
           </select>
           <input
-            type="number"
+            type="number" inputMode="numeric"
             value={priceMin}
             onChange={(e) => setPriceMin(e.target.value)}
             placeholder="Min Price / day"
             className={inputCls}
           />
           <input
-            type="number"
+            type="number" inputMode="numeric"
             value={priceMax}
             onChange={(e) => setPriceMax(e.target.value)}
             placeholder="Max Price / day"

@@ -98,7 +98,7 @@ export function RequestPartsModal({
               </span>
               <input
                 required
-                type="number"
+                type="number" inputMode="numeric"
                 min={1}
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
@@ -108,7 +108,7 @@ export function RequestPartsModal({
             <label className="flex flex-col gap-1 text-sm">
               <span className="text-xs font-medium text-ink">Est. Cost (GHS, optional)</span>
               <input
-                type="number"
+                type="number" inputMode="decimal"
                 min={0}
                 step="0.01"
                 value={estimatedCost}

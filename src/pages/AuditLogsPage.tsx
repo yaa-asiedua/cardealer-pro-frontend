@@ -205,7 +205,7 @@ export function AuditLogsPage() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard label="Total Events" value={totalCount != null ? String(totalCount) : "—"} sublabel="Matching current filters" icon={ShieldAlert} />
         <KpiCard label="Today's Events" value={todayCount != null ? String(todayCount) : "—"} sublabel="Since midnight" icon={ShieldAlert} />
         <KpiCard
@@ -343,18 +343,20 @@ export function AuditLogsPage() {
           {entityBreakdown.length === 0 ? (
             <p className="py-10 text-center text-sm text-muted">No events match these filters.</p>
           ) : (
-            <div className="flex items-center gap-4">
-              <ResponsiveContainer width="50%" height={160}>
-                <PieChart>
-                  <Pie data={entityBreakdown} dataKey="count" nameKey="name" innerRadius={44} outerRadius={70} paddingAngle={2}>
-                    {entityBreakdown.map((_, i) => (
-                      <Cell key={i} fill={ENTITY_COLORS[i % ENTITY_COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="flex-1">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+              <div className="w-full sm:w-1/2">
+                <ResponsiveContainer width="100%" height={160}>
+                  <PieChart>
+                    <Pie data={entityBreakdown} dataKey="count" nameKey="name" innerRadius={44} outerRadius={70} paddingAngle={2}>
+                      {entityBreakdown.map((_, i) => (
+                        <Cell key={i} fill={ENTITY_COLORS[i % ENTITY_COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="w-full sm:flex-1">
                 <div className="text-2xl font-semibold tabular-nums text-ink">{bulkLogs.length}</div>
                 <p className="mb-2 text-xs text-muted">Events (up to 200 most recent)</p>
                 <ul className="flex flex-col gap-1.5 text-xs">

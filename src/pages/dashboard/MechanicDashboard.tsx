@@ -176,7 +176,7 @@ export function MechanicDashboard({ data }: { data: MechanicDashboardData }) {
         <p className="text-sm text-muted">Overview of service jobs, vehicle maintenance, and workshop activities.</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard
           label="Total Service Jobs"
           value={String(cohort.thisMonth.total)}

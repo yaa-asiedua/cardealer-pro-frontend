@@ -255,7 +255,7 @@ export function SaleFormPage() {
 
   return (
     <div>
-      <Link to="/sales" className="mb-4 flex w-fit items-center gap-1.5 text-sm font-medium text-action hover:underline">
+      <Link to="/sales" className="touch-target mb-4 flex w-fit items-center gap-1.5 text-sm font-medium text-action hover:underline">
         <ArrowLeft size={14} /> Back to Sales
       </Link>
 
@@ -395,7 +395,7 @@ export function SaleFormPage() {
                           onChange={(e) => setNewCustomer((c) => ({ ...c, lastName: e.target.value }))}
                           className={inputCls}
                         />
-                        <input
+                        <input type="tel"
                           placeholder="Phone"
                           value={newCustomer.phone}
                           onChange={(e) => setNewCustomer((c) => ({ ...c, phone: e.target.value }))}
@@ -496,7 +496,7 @@ export function SaleFormPage() {
               <Field label="Sale Price (GHS)" required>
                 <input
                   required
-                  type="number"
+                  type="number" inputMode="decimal"
                   min={0}
                   step="0.01"
                   value={sellingPrice}
@@ -506,7 +506,7 @@ export function SaleFormPage() {
               </Field>
               <Field label="Discount (GHS)">
                 <input
-                  type="number"
+                  type="number" inputMode="decimal"
                   min={0}
                   step="0.01"
                   value={discount}
@@ -596,7 +596,7 @@ export function SaleFormPage() {
                     <Field label="Year" required>
                       <input
                         required
-                        type="number"
+                        type="number" inputMode="numeric"
                         value={tradeInYear}
                         onChange={(e) => setTradeInYear(e.target.value)}
                         className={inputCls}
@@ -605,7 +605,7 @@ export function SaleFormPage() {
                     <Field label="Trade-in Value (GHS)" required>
                       <input
                         required
-                        type="number"
+                        type="number" inputMode="decimal"
                         min={0}
                         step="0.01"
                         value={tradeInValue}
@@ -615,7 +615,7 @@ export function SaleFormPage() {
                     </Field>
                     <Field label="Outstanding Loan (GHS)">
                       <input
-                        type="number"
+                        type="number" inputMode="decimal"
                         min={0}
                         step="0.01"
                         value={tradeInOutstandingLoan}
@@ -669,7 +669,7 @@ export function SaleFormPage() {
                 <Field label="Principal (GHS)" required>
                   <input
                     required
-                    type="number"
+                    type="number" inputMode="decimal"
                     min={0}
                     step="0.01"
                     value={principalAmount}
@@ -680,7 +680,7 @@ export function SaleFormPage() {
                 <Field label="Interest Rate (%)" required>
                   <input
                     required
-                    type="number"
+                    type="number" inputMode="decimal"
                     min={0}
                     step="0.01"
                     value={interestRate}
@@ -691,7 +691,7 @@ export function SaleFormPage() {
                 <Field label="Term (months)" required>
                   <input
                     required
-                    type="number"
+                    type="number" inputMode="numeric"
                     min={1}
                     value={termMonths}
                     onChange={(e) => setTermMonths(e.target.value)}
@@ -904,8 +904,11 @@ function StepCard({
 
 function StepNextButton({ visible, disabled, onClick }: { visible: boolean; disabled: boolean; onClick: () => void }) {
   if (!visible) return null;
+  // Hidden on phones: there the sticky footer's "Next" is always on screen
+  // and runs the same goNext(), so this second forward button was just a
+  // duplicate (mobile audit).
   return (
-    <div className="mt-4 flex justify-end">
+    <div className="mt-4 hidden justify-end sm:flex">
       <button
         type="button"
         onClick={onClick}

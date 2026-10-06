@@ -236,7 +236,7 @@ export function CustomerFormPage() {
 
   return (
     <div>
-      <Link to="/customers" className="mb-4 flex w-fit items-center gap-1.5 text-sm font-medium text-action hover:underline">
+      <Link to="/customers" className="touch-target mb-4 flex w-fit items-center gap-1.5 text-sm font-medium text-action hover:underline">
         <ArrowLeft size={14} /> Back to Customers
       </Link>
 
@@ -282,7 +282,7 @@ export function CustomerFormPage() {
                 <input type="date" value={values.dateOfBirth} onChange={(e) => update("dateOfBirth", e.target.value)} className={inputCls} />
               </Field>
               <Field label="Phone Number" required>
-                <input required value={values.phone} onChange={(e) => update("phone", e.target.value)} placeholder="e.g. 020 123 4567" className={inputCls} />
+                <input type="tel" required value={values.phone} onChange={(e) => update("phone", e.target.value)} placeholder="e.g. 020 123 4567" className={inputCls} />
               </Field>
               <Field label="Email Address">
                 <input type="email" value={values.email} onChange={(e) => update("email", e.target.value)} placeholder="e.g. name@gmail.com" className={inputCls} />

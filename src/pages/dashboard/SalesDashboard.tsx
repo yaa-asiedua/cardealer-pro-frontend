@@ -115,7 +115,7 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
         <p className="text-sm text-muted">Here's an overview of your sales activity.</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard
           label="Vehicles sold (this month)"
           value={String(data.mySalesThisMonth.count)}
@@ -209,7 +209,7 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
               ))}
             </ul>
           )}
-          <Link to="/vehicles" className="mt-3 block text-sm font-medium text-action hover:underline">
+          <Link to="/vehicles" className="touch-target mt-3 block text-sm font-medium text-action hover:underline">
             View all →
           </Link>
         </SectionCard>
@@ -227,7 +227,7 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
               ))}
             </ul>
           )}
-          <Link to="/customers" className="mt-3 block text-sm font-medium text-action hover:underline">
+          <Link to="/customers" className="touch-target mt-3 block text-sm font-medium text-action hover:underline">
             View all →
           </Link>
         </SectionCard>
@@ -265,7 +265,7 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
               </table>
             </div>
           )}
-          <Link to="/sales" className="mt-3 block text-sm font-medium text-action hover:underline">
+          <Link to="/sales" className="touch-target mt-3 block text-sm font-medium text-action hover:underline">
             View all →
           </Link>
         </SectionCard>

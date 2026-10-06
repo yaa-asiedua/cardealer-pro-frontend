@@ -32,14 +32,16 @@ export function Topbar({ title, onMenuClick }: { title: string; onMenuClick: () 
         >
           <Menu size={20} />
         </button>
-        <h1 className="truncate text-lg font-semibold text-ink">{title}</h1>
+        <h1 className="truncate text-base font-semibold text-ink sm:text-lg">{title}</h1>
       </div>
 
       <div className="flex items-center gap-1 sm:gap-3">
         <button
           type="button"
           onClick={toggleTheme}
-          className="rounded-lg p-2 text-muted hover:bg-surface hover:text-ink"
+          // On phones this lives in the profile menu instead (below) — the
+          // freed width lets long page titles ("Maintenance Schedule") fit.
+          className="hidden rounded-lg p-2 text-muted hover:bg-surface hover:text-ink sm:block"
           aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
         >
           {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
@@ -52,7 +54,7 @@ export function Topbar({ title, onMenuClick }: { title: string; onMenuClick: () 
             onClick={() => setIsMenuOpen((v) => !v)}
             aria-haspopup="menu"
             aria-expanded={isMenuOpen}
-            className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-surface"
+            className="flex items-center gap-2 rounded-lg px-1 py-1.5 hover:bg-surface sm:px-2"
           >
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-action/10 text-action">
               <UserIcon size={16} />
@@ -61,7 +63,7 @@ export function Topbar({ title, onMenuClick }: { title: string; onMenuClick: () 
               <div className="text-sm font-medium text-ink">{user.fullName}</div>
               <div className="text-xs text-muted">{ROLE_LABELS[user.role]}</div>
             </div>
-            <ChevronDown size={16} className="text-muted" />
+            <ChevronDown size={16} className="hidden text-muted sm:block" />
           </button>
 
           {isMenuOpen && (
@@ -78,6 +80,17 @@ export function Topbar({ title, onMenuClick }: { title: string; onMenuClick: () 
                 >
                   <UserIcon size={15} />
                   Profile
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    toggleTheme();
+                  }}
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-ink hover:bg-surface sm:hidden"
+                >
+                  {theme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
+                  {theme === "dark" ? "Light mode" : "Dark mode"}
                 </button>
                 <button
                   type="button"

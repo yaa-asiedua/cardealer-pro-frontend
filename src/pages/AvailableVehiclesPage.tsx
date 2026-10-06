@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AlertCircle, Car, LayoutGrid, List, Loader2, RotateCcw, Search } from "lucide-react";
+import { AlertCircle, Car, LayoutGrid, List, Loader2, RotateCcw, Search, SlidersHorizontal } from "lucide-react";
 import { StatusBadge } from "../components/StatusBadge";
 import { api, ApiError } from "../lib/api-client";
 import { formatCurrency } from "../lib/format";
@@ -79,6 +79,13 @@ export function AvailableVehiclesPage() {
 
   useEffect(loadList, [loadList]);
 
+  // Phones show only the search box plus a "Filters" toggle — the full
+  // panel took a whole screen before the first vehicle (mobile audit).
+  // From sm up the panel is always open.
+  const [showFilters, setShowFilters] = useState(false);
+  const activeFilterCount = [make, model, vehicleType, transmission, fuelType, yearFrom, yearTo, priceMin, priceMax].filter(Boolean).length;
+  const advCls = showFilters ? "" : "hidden sm:block";
+
   function resetFilters() {
     setSearch("");
     setMake("");
@@ -122,18 +129,31 @@ export function AvailableVehiclesPage() {
 
       <div className="mb-4 rounded-xl border border-border bg-card p-4">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
-          <div className="relative lg:col-span-2">
-            <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by make, model, or keyword…"
-              className={`${inputCls} pl-9`}
-            />
+          <div className="flex gap-2 lg:col-span-2">
+            <div className="relative flex-1">
+              <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search by make, model, or keyword…"
+                className={`${inputCls} pl-9`}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowFilters((v) => !v)}
+              aria-expanded={showFilters}
+              className={`flex shrink-0 items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium sm:hidden ${
+                showFilters || activeFilterCount > 0 ? "border-action text-action" : "border-border text-ink"
+              }`}
+            >
+              <SlidersHorizontal size={16} />
+              Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
+            </button>
           </div>
-          <input value={make} onChange={(e) => setMake(e.target.value)} placeholder="Make" className={inputCls} />
-          <input value={model} onChange={(e) => setModel(e.target.value)} placeholder="Model" className={inputCls} />
-          <select value={vehicleType} onChange={(e) => setVehicleType(e.target.value)} className={inputCls}>
+          <input value={make} onChange={(e) => setMake(e.target.value)} placeholder="Make" className={`${inputCls} ${advCls}`} />
+          <input value={model} onChange={(e) => setModel(e.target.value)} placeholder="Model" className={`${inputCls} ${advCls}`} />
+          <select value={vehicleType} onChange={(e) => setVehicleType(e.target.value)} className={`${inputCls} ${advCls}`}>
             <option value="">All Types</option>
             {Object.keys(typeCounts).map((t) => (
               <option key={t} value={t}>
@@ -143,9 +163,9 @@ export function AvailableVehiclesPage() {
           </select>
         </div>
 
-        <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-          <input type="number" value={yearFrom} onChange={(e) => setYearFrom(e.target.value)} placeholder="Year From" className={inputCls} />
-          <input type="number" value={yearTo} onChange={(e) => setYearTo(e.target.value)} placeholder="Year To" className={inputCls} />
+        <div className={`mt-3 ${showFilters ? "grid" : "hidden"} sm:grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6`}>
+          <input type="number" inputMode="numeric" value={yearFrom} onChange={(e) => setYearFrom(e.target.value)} placeholder="Year From" className={inputCls} />
+          <input type="number" inputMode="numeric" value={yearTo} onChange={(e) => setYearTo(e.target.value)} placeholder="Year To" className={inputCls} />
           <select value={transmission} onChange={(e) => setTransmission(e.target.value)} className={inputCls}>
             <option value="">All Transmissions</option>
             {TRANSMISSION_OPTIONS.map((t) => (
@@ -162,9 +182,9 @@ export function AvailableVehiclesPage() {
               </option>
             ))}
           </select>
-          <input type="number" value={priceMin} onChange={(e) => setPriceMin(e.target.value)} placeholder="Min Price (GHS)" className={inputCls} />
+          <input type="number" inputMode="numeric" value={priceMin} onChange={(e) => setPriceMin(e.target.value)} placeholder="Min Price (GHS)" className={inputCls} />
           <div className="flex gap-2">
-            <input type="number" value={priceMax} onChange={(e) => setPriceMax(e.target.value)} placeholder="Max Price (GHS)" className={inputCls} />
+            <input type="number" inputMode="numeric" value={priceMax} onChange={(e) => setPriceMax(e.target.value)} placeholder="Max Price (GHS)" className={inputCls} />
             <button
               type="button"
               onClick={resetFilters}

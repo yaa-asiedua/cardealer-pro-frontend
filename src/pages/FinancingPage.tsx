@@ -158,7 +158,7 @@ export function FinancingPage() {
 
   return (
     <div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         <KpiCard label="Pending Review" value={kpis ? String(kpis.pendingReview) : "—"} sublabel="Awaiting review" icon={Clock} tone="warning" />
         <KpiCard label="Active Loans" value={kpis ? String(kpis.activeLoans) : "—"} sublabel="Currently active" icon={ClipboardList} tone="success" />
         <KpiCard label="Total Financed" value={kpis ? formatCurrencyCompact(kpis.totalFinanced) : "—"} sublabel="All time" icon={Banknote} />
@@ -433,7 +433,7 @@ function FinancingLoansTab({
 
       <div className="mt-4 rounded-xl border border-border bg-card shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="sticky-actions w-full text-sm">
             <thead>
               <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted">
                 <th className="px-4 py-3 font-semibold">Loan Ref</th>

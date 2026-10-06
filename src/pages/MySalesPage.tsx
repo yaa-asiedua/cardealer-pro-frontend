@@ -172,7 +172,7 @@ export function MySalesPage() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard
           label="Total sales"
           value={thisMonth ? String(thisMonth.count) : "—"}
@@ -240,7 +240,7 @@ export function MySalesPage() {
 
           <div className="overflow-hidden rounded-xl border border-border bg-card">
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="phone-hide-3 w-full text-sm">
                 <thead>
                   <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted">
                     <th className="px-4 py-3 font-semibold">Customer</th>
