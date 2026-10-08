@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { Link, Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { ArrowRight, Car, Eye, EyeOff, Loader2 } from "lucide-react";
 import { AuthLayout } from "../components/auth/AuthLayout";
 import { useAuth } from "../context/AuthContext";
@@ -71,9 +71,11 @@ export function LoginPage() {
             <label htmlFor="password" className="block text-sm font-medium text-ink">
               Password
             </label>
-            <Link to="/forgot-password" className="touch-target text-xs font-medium text-action hover:underline">
-              Forgot Password?
-            </Link>
+            {/* No email service is connected yet, so the self-service reset
+                link would never reach anyone — an Admin resets passwords from
+                Employees instead. The /forgot-password route still exists for
+                when email delivery is added. */}
+            <span className="text-xs text-muted">Forgot it? Ask your Admin</span>
           </div>
           <div className="relative">
             <input

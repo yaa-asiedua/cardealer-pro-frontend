@@ -7,15 +7,19 @@ import { MechanicDashboard } from "./dashboard/MechanicDashboard";
 import { RentalsDashboard } from "./dashboard/RentalsDashboard";
 import { SalesDashboard } from "./dashboard/SalesDashboard";
 import type { Dashboard } from "../types/dashboard";
+import { useAutoRefresh } from "../lib/use-auto-refresh";
 
 export function DashboardPage() {
   const [dashboard, setDashboard] = useState<Dashboard | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  // Bumped by useAutoRefresh; background refreshes update the numbers in
+  // place (no full-page spinner — that only shows before the first load).
+  const [refreshTick, setRefreshTick] = useState(0);
+  useAutoRefresh(() => setRefreshTick((t) => t + 1));
 
   useEffect(() => {
     let cancelled = false;
-    setIsLoading(true);
     api
       .get<{ dashboard: Dashboard }>("/dashboard")
       .then((res) => {
@@ -31,7 +35,7 @@ export function DashboardPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [refreshTick]);
 
   if (isLoading) {
     return (

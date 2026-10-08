@@ -161,7 +161,7 @@ export function RentalCustomersPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by name, phone, or ID number…"
-          className="w-64 rounded-lg border border-border bg-card px-3 py-2 text-sm text-ink outline-none focus:border-action focus:ring-1 focus:ring-action"
+          className="w-full sm:w-64 rounded-lg border border-border bg-card px-3 py-2 text-sm text-ink outline-none focus:border-action focus:ring-1 focus:ring-action"
         />
         <select
           value={statusFilter}

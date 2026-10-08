@@ -31,6 +31,7 @@ import {
   TRANSACTION_TYPE_LABELS,
 } from "../lib/revenue-helpers";
 import type { RevenueOverview, RevenueTransactionListResult } from "../types/revenue";
+import { useAutoRefresh } from "../lib/use-auto-refresh";
 
 type Period = "month" | "quarter" | "year";
 
@@ -73,6 +74,8 @@ export function PaymentsRevenuePage() {
 
   useEffect(loadOverview, [loadOverview]);
 
+  useAutoRefresh(loadOverview);
+
   useEffect(() => {
     setTxPage(1);
   }, [txType, expanded]);
@@ -89,6 +92,8 @@ export function PaymentsRevenuePage() {
   }, [expanded, txType, txPage]);
 
   useEffect(loadTransactions, [loadTransactions]);
+
+  useAutoRefresh(loadTransactions);
 
   function handleRecorded(message: string) {
     showToast(message);

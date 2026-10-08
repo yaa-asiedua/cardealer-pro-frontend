@@ -11,6 +11,7 @@ import { formatCurrency, formatDate } from "../lib/format";
 import { customerDisplayName } from "../types/customer";
 import { vehicleDisplayName } from "../lib/vehicle-helpers";
 import type { Transfer, TransferListResult, TransferStatus } from "../types/transfer";
+import { useAutoRefresh } from "../lib/use-auto-refresh";
 
 type Tab = "all" | "pending" | "submitted" | "completed";
 
@@ -81,6 +82,10 @@ export function TransfersPage() {
     loadKpis();
     loadInsight();
   }, [loadKpis, loadInsight]);
+  useAutoRefresh(() => {
+    loadKpis();
+    loadInsight();
+  });
 
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -106,7 +111,7 @@ export function TransfersPage() {
         <KpiCard label="Completed" value={kpis ? String(kpis.completed) : "—"} icon={FileCheck2} tone="success" />
       </div>
 
-      <div className="mt-6 flex gap-1 border-b border-border">
+      <div className="mt-6 flex gap-1 overflow-x-auto shadow-[inset_0_-1px_0_rgb(var(--color-border))] [mask-image:linear-gradient(to_right,#000_80%,transparent)] sm:[mask-image:none]">
         {(
           [
             ["all", "All Transfers"],
@@ -119,7 +124,7 @@ export function TransfersPage() {
             key={key}
             type="button"
             onClick={() => setTab(key)}
-            className={`-mb-px border-b-2 px-4 py-2.5 text-sm font-medium ${
+            className={`shrink-0 whitespace-nowrap border-b-2 px-3 py-2.5 sm:px-4 text-sm font-medium ${
               tab === key ? "border-action text-action" : "border-transparent text-muted hover:text-ink"
             }`}
           >
@@ -209,6 +214,8 @@ function TransfersTab({
 
   useEffect(loadList, [loadList]);
 
+  useAutoRefresh(loadList);
+
   async function handleCollectDocuments(transfer: Transfer) {
     setBusyId(transfer.id);
     try {
@@ -283,7 +290,7 @@ function TransfersTab({
             placeholder="Search by customer, vehicle, or transfer ref…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-64 rounded-lg border border-border bg-card px-3 py-2 text-sm outline-none focus:border-action focus:ring-1 focus:ring-action"
+            className="w-full sm:w-64 rounded-lg border border-border bg-card px-3 py-2 text-sm outline-none focus:border-action focus:ring-1 focus:ring-action"
           />
           <input
             type="date"
@@ -337,7 +344,7 @@ function TransfersTab({
               </tr>
             </thead>
             <tbody>
-              {isLoading ? (
+              {isLoading && !result ? (
                 <tr>
                   <td colSpan={7} className="px-4 py-10 text-center text-muted">
                     Loading…

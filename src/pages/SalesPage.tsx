@@ -14,6 +14,7 @@ import { PAYMENT_METHOD_OPTIONS } from "../lib/sale-helpers";
 import { customerDisplayName } from "../types/customer";
 import { vehicleDisplayName } from "../lib/vehicle-helpers";
 import type { SaleListResult, SaleStatus, SalesReport } from "../types/sale";
+import { useAutoRefresh } from "../lib/use-auto-refresh";
 
 interface SalespersonOption {
   id: string;
@@ -141,7 +142,10 @@ export function SalesPage() {
   }, []);
 
   useEffect(loadList, [loadList]);
+
+  useAutoRefresh(loadList);
   useEffect(loadKpisAndChart, [loadKpisAndChart]);
+  useAutoRefresh(loadKpisAndChart);
 
   function resetFilters() {
     setSearch("");
@@ -311,7 +315,7 @@ export function SalesPage() {
               </tr>
             </thead>
             <tbody>
-              {isLoading ? (
+              {isLoading && !result ? (
                 <tr>
                   <td colSpan={8} className="px-4 py-10 text-center text-muted">
                     Loading…

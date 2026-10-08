@@ -330,12 +330,12 @@ export function ReportsPage() {
     <div>
       <div className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 shadow-sm sm:flex-row sm:items-end sm:justify-between">
         <div className="flex flex-wrap items-end gap-3">
-          <label className="flex flex-col gap-1 text-sm">
+          <label className="flex w-full flex-col gap-1 text-sm sm:w-auto">
             <span className="text-xs font-medium text-ink">Date Range</span>
             <div className="flex items-center gap-1">
-              <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className={inputCls} />
+              <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className={`${inputCls} min-w-0 flex-1`} />
               <span className="text-muted">–</span>
-              <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className={inputCls} />
+              <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className={`${inputCls} min-w-0 flex-1`} />
             </div>
           </label>
           <label className="flex flex-col gap-1 text-sm">

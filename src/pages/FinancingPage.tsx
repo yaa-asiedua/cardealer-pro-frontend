@@ -28,6 +28,7 @@ import { vehicleDisplayName } from "../lib/vehicle-helpers";
 import { paidSoFar } from "../types/financing";
 import type { Financing, FinancingListResult, FinancingReport } from "../types/financing";
 import type { RevenueOverview, RevenueTransactionListResult } from "../types/revenue";
+import { useAutoRefresh } from "../lib/use-auto-refresh";
 
 type Tab = "applications" | "active" | "payments" | "overdue" | "closed";
 
@@ -124,6 +125,7 @@ export function FinancingPage() {
   useEffect(() => {
     loadKpis();
   }, [loadKpis]);
+  useAutoRefresh(loadKpis);
 
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -175,7 +177,7 @@ export function FinancingPage() {
         />
       </div>
 
-      <div className="mt-6 flex gap-1 border-b border-border">
+      <div className="mt-6 flex gap-1 overflow-x-auto shadow-[inset_0_-1px_0_rgb(var(--color-border))] [mask-image:linear-gradient(to_right,#000_80%,transparent)] sm:[mask-image:none]">
         {(
           [
             ["applications", "Applications"],
@@ -189,7 +191,7 @@ export function FinancingPage() {
             key={key}
             type="button"
             onClick={() => setTab(key)}
-            className={`-mb-px border-b-2 px-4 py-2.5 text-sm font-medium ${
+            className={`shrink-0 whitespace-nowrap border-b-2 px-3 py-2.5 sm:px-4 text-sm font-medium ${
               tab === key ? "border-action text-action" : "border-transparent text-muted hover:text-ink"
             }`}
           >
@@ -340,6 +342,8 @@ function FinancingLoansTab({
 
   useEffect(loadList, [loadList]);
 
+  useAutoRefresh(loadList);
+
   async function handleApprove(financing: Financing) {
     setBusyId(financing.id);
     try {
@@ -410,7 +414,7 @@ function FinancingLoansTab({
             placeholder="Search by customer, vehicle, or loan ref…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-64 rounded-lg border border-border bg-card px-3 py-2 text-sm outline-none focus:border-action focus:ring-1 focus:ring-action"
+            className="w-full sm:w-64 rounded-lg border border-border bg-card px-3 py-2 text-sm outline-none focus:border-action focus:ring-1 focus:ring-action"
           />
           <button
             type="button"
@@ -448,7 +452,7 @@ function FinancingLoansTab({
               </tr>
             </thead>
             <tbody>
-              {isLoading ? (
+              {isLoading && !result ? (
                 <tr>
                   <td colSpan={9} className="px-4 py-10 text-center text-muted">
                     Loading…
@@ -624,6 +628,8 @@ function FinancingPaymentsTab() {
 
   useEffect(loadList, [loadList]);
 
+  useAutoRefresh(loadList);
+
   function handleExport() {
     if (!result || result.data.length === 0) {
       showToast("No payments to export", "error");
@@ -662,7 +668,7 @@ function FinancingPaymentsTab() {
               </tr>
             </thead>
             <tbody>
-              {isLoading ? (
+              {isLoading && !result ? (
                 <tr>
                   <td colSpan={6} className="px-4 py-10 text-center text-muted">
                     Loading…

@@ -24,6 +24,7 @@ import { customerDisplayName } from "../types/customer";
 import { vehicleDisplayName } from "../lib/vehicle-helpers";
 import type { Rental, RentalListResult, RentalsReport, RentalStatus } from "../types/rental";
 import type { VehicleListResult } from "../types/vehicle";
+import { useAutoRefresh } from "../lib/use-auto-refresh";
 
 type Tab = "all" | "active" | "upcoming" | "dueToday" | "overdue" | "returned";
 
@@ -139,6 +140,11 @@ export function RentalsPage() {
       .catch(() => undefined);
   }, []);
 
+  useAutoRefresh(() => {
+    loadKpis();
+    loadInsights();
+  });
+
   useEffect(() => {
     loadKpis();
     loadInsights();
@@ -198,7 +204,7 @@ export function RentalsPage() {
         />
       </div>
 
-      <div className="mt-6 flex gap-1 border-b border-border">
+      <div className="mt-6 flex gap-1 overflow-x-auto shadow-[inset_0_-1px_0_rgb(var(--color-border))] [mask-image:linear-gradient(to_right,#000_80%,transparent)] sm:[mask-image:none]">
         {(
           [
             ["all", "All Rentals"],
@@ -213,7 +219,7 @@ export function RentalsPage() {
             key={key}
             type="button"
             onClick={() => setTab(key)}
-            className={`-mb-px border-b-2 px-4 py-2.5 text-sm font-medium ${
+            className={`shrink-0 whitespace-nowrap border-b-2 px-3 py-2.5 sm:px-4 text-sm font-medium ${
               tab === key ? "border-action text-action" : "border-transparent text-muted hover:text-ink"
             }`}
           >
@@ -343,6 +349,8 @@ function RentalsTab({
 
   useEffect(loadList, [loadList]);
 
+  useAutoRefresh(loadList);
+
   async function handlePickup(rental: Rental) {
     setActionRentalId(rental.id);
     try {
@@ -413,7 +421,7 @@ function RentalsTab({
             placeholder="Search by customer, vehicle, or booking ID…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-64 rounded-lg border border-border bg-card px-3 py-2 text-sm outline-none focus:border-action focus:ring-1 focus:ring-action"
+            className="w-full sm:w-64 rounded-lg border border-border bg-card px-3 py-2 text-sm outline-none focus:border-action focus:ring-1 focus:ring-action"
           />
           <select
             value={vehicleFilter}
@@ -495,7 +503,7 @@ function RentalsTab({
               </tr>
             </thead>
             <tbody>
-              {isLoading ? (
+              {isLoading && !result ? (
                 <tr>
                   <td colSpan={9} className="px-4 py-10 text-center text-muted">
                     Loading…

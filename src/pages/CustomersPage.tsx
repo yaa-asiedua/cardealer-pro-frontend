@@ -17,6 +17,7 @@ import { formatCurrency, formatDate } from "../lib/format";
 import { customerDisplayName } from "../types/customer";
 import type { Customer, CustomerListResult, CustomerStatus, CustomerType } from "../types/customer";
 import { RowMenu } from "../components/RowMenu";
+import { useAutoRefresh } from "../lib/use-auto-refresh";
 
 interface Kpis {
   total: number;
@@ -103,7 +104,10 @@ export function CustomersPage() {
   }, []);
 
   useEffect(loadList, [loadList]);
+
+  useAutoRefresh(loadList);
   useEffect(loadKpis, [loadKpis]);
+  useAutoRefresh(loadKpis);
 
   function resetFilters() {
     setSearch("");
@@ -138,7 +142,7 @@ export function CustomersPage() {
             placeholder="Search by name, phone, or email…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-64 rounded-lg border border-border bg-card px-3 py-2 text-sm outline-none focus:border-action focus:ring-1 focus:ring-action"
+            className="w-full sm:w-64 rounded-lg border border-border bg-card px-3 py-2 text-sm outline-none focus:border-action focus:ring-1 focus:ring-action"
           />
           <select
             value={typeFilter}
@@ -195,7 +199,7 @@ export function CustomersPage() {
                 </tr>
               </thead>
               <tbody>
-                {isLoading ? (
+                {isLoading && !result ? (
                   <tr>
                     <td colSpan={7} className="px-4 py-10 text-center text-muted">
                       Loading…

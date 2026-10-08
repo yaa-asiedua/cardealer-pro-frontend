@@ -1,4 +1,6 @@
 export type NotificationCategory =
+  | "SALES"
+  | "RENTALS"
   | "FOLLOWUP"
   | "APPLICATIONS"
   | "CUSTOMERS"
@@ -39,6 +41,12 @@ export type NotificationCategory =
 // Result"/"Vehicle Fault Alert" dropped too — no inspection or
 // diagnostic-scan feature exists anywhere in this system.
 const CATEGORY_BY_TYPE: Record<string, NotificationCategory> = {
+  // Admin's oversight alerts — what Sales/Rentals/Mechanic are doing
+  SALE_CREATED: "SALES",
+  TRANSFER_PENDING: "SALES",
+  RENTAL_BOOKED: "RENTALS",
+  RENTAL_RETURNED: "RENTALS",
+  SERVICE_COMPLETED: "SERVICE_JOBS",
   FOLLOWUP_CREATED: "FOLLOWUP",
   FINANCING_PENDING: "APPLICATIONS",
   FINANCING_APPROVED: "APPLICATIONS",
@@ -58,6 +66,8 @@ export function notificationCategory(type: string): NotificationCategory {
 }
 
 export const NOTIFICATION_CATEGORY_LABELS: Record<NotificationCategory, string> = {
+  SALES: "Sales",
+  RENTALS: "Rentals",
   FOLLOWUP: "Follow-ups",
   APPLICATIONS: "Applications",
   CUSTOMERS: "Customers",

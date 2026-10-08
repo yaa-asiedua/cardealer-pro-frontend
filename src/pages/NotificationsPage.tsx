@@ -8,6 +8,8 @@ import type { AppNotification, NotificationListResult } from "../types";
 
 const CATEGORIES: (NotificationCategory | "ALL")[] = [
   "ALL",
+  "SALES",
+  "RENTALS",
   "FOLLOWUP",
   "APPLICATIONS",
   "CUSTOMERS",
@@ -55,6 +57,8 @@ export function NotificationsPage() {
   const counts = useMemo(() => {
     const result: Record<NotificationCategory | "ALL", number> = {
       ALL: all?.length ?? 0,
+      SALES: 0,
+      RENTALS: 0,
       FOLLOWUP: 0,
       APPLICATIONS: 0,
       CUSTOMERS: 0,

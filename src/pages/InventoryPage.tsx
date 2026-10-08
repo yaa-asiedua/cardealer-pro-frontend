@@ -12,6 +12,7 @@ import { formatCurrency, formatDate } from "../lib/format";
 import { deriveVehiclePurpose, vehicleDisplayName } from "../lib/vehicle-helpers";
 import type { Vehicle, VehicleListResult, VehiclePurpose, VehicleStatus } from "../types/vehicle";
 import { RowMenu } from "../components/RowMenu";
+import { useAutoRefresh } from "../lib/use-auto-refresh";
 
 const AGING_THRESHOLD_DAYS = 90;
 
@@ -104,7 +105,10 @@ export function InventoryPage() {
   }, []);
 
   useEffect(loadList, [loadList]);
+
+  useAutoRefresh(loadList);
   useEffect(loadKpis, [loadKpis]);
+  useAutoRefresh(loadKpis);
 
   function refreshAll() {
     loadList();
@@ -160,7 +164,7 @@ export function InventoryPage() {
             placeholder="Search make, model, VIN, reg. no, stock no…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-64 rounded-lg border border-border bg-card px-3 py-2 text-sm outline-none focus:border-action focus:ring-1 focus:ring-action"
+            className="w-full sm:w-64 rounded-lg border border-border bg-card px-3 py-2 text-sm outline-none focus:border-action focus:ring-1 focus:ring-action"
           />
           <select
             value={statusFilter}
@@ -222,7 +226,7 @@ export function InventoryPage() {
               </tr>
             </thead>
             <tbody>
-              {isLoading ? (
+              {isLoading && !result ? (
                 <tr>
                   <td colSpan={8} className="px-4 py-10 text-center text-muted">
                     Loading…
