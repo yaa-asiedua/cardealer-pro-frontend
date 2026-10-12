@@ -112,7 +112,7 @@ export function FinanceDashboard({ data }: { data: FinanceDashboardData }) {
       .get<FinancingListResult>("/finance/loans?overdue=true&pageSize=100")
       .then((res) => {
         setOverdueLoans(res.data.slice(0, 5));
-        setOverdueTotal(res.data.reduce((sum, f) => sum + Number(f.outstandingBalance), 0));
+        setOverdueTotal(res.data.reduce((sum, f) => sum + (f.arrears?.amount ?? 0), 0));
       })
       .catch(() => {
         setOverdueLoans([]);
@@ -435,7 +435,7 @@ export function FinanceDashboard({ data }: { data: FinanceDashboardData }) {
                     <div className="truncate font-medium text-ink">{customerDisplayName(f.sale.customer)}</div>
                     <div className="truncate text-xs text-muted">{vehicleDisplayName(f.sale.vehicle)}</div>
                   </div>
-                  <span className="shrink-0 font-medium text-danger">{formatCurrency(f.outstandingBalance)}</span>
+                  <span className="shrink-0 font-medium text-danger">{formatCurrency(f.arrears?.amount ?? 0)}</span>
                 </li>
               ))}
             </ul>

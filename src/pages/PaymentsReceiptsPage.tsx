@@ -156,7 +156,7 @@ export function PaymentsReceiptsPage() {
 
     api
       .get<FinancingListResult>("/finance/loans?overdue=true&pageSize=100")
-      .then((res) => setOverdueTotal(res.data.reduce((sum, f) => sum + Number(f.outstandingBalance), 0)))
+      .then((res) => setOverdueTotal(res.data.reduce((sum, f) => sum + (f.arrears?.amount ?? 0), 0)))
       .catch(() => setOverdueTotal(null));
   }, []);
 

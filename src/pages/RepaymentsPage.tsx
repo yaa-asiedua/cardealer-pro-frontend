@@ -66,20 +66,14 @@ interface Row {
 // lib/financing-schedule.ts) — no installment is stored anywhere, so
 // this is computed client-side from one bulk fetch rather than a
 // server-paginated query, the same "derived, not a new stored concept"
-// treatment as Rental/Sale balance calcs elsewhere. One real,
-// deliberate inconsistency with other Finance pages, flagged in
-// financing-schedule.ts too: Overdue here is based on the CURRENT
-// installment's own due date, not the loan's firstPaymentDue (which is
-// what the overdue=true flag used on the Dashboard/Financing/Payments
-// pages checks) — that flag effectively never clears once a loan's
-// first month has passed, which isn't useful for installment-level
-// tracking. The two pages can legitimately show different numbers for
-// the same loan.
+// treatment as Rental/Sale balance calcs elsewhere. Overdue here is the
+// current installment's own due date — consistent with the server's
+// `arrears` used by the overdue=true flag on the other Finance pages.
 //
-// Dropped, not real: the mockup's "All Risk Levels" filter (the paused
-// AI risk-scoring feature, same call made on every other Finance page)
-// and "Send Reminder"/"Follow Up" actions — customers aren't notifiable
-// users in this system (no email/SMS provider, no customer login), so
+// Dropped, not real: the mockup's "All Risk Levels" filter (the risk
+// hint is per application, in the loan detail — not a stored level) and
+// "Send Reminder"/"Follow Up" actions — customers aren't notifiable users
+// in this system (no email/SMS provider, no customer login), so
 // there's no real recipient or channel for a reminder. Replaced with a
 // real "View" action opening the existing loan detail modal.
 export function RepaymentsPage() {

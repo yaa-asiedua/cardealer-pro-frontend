@@ -28,6 +28,9 @@ export interface Financing {
   decisionDate: string | null;
   rejectionReason: string | null;
   firstPaymentDue: string | null;
+  // How far behind the customer is (server-computed from the repayment
+  // schedule and payments): 0 when up to date.
+  arrears?: { instalmentsDue: number; expectedPaid: number; paid: number; amount: number; missedInstalments: number };
   outstandingBalance: string;
   createdAt: string;
   updatedAt: string;

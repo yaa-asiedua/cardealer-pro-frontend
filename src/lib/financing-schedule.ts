@@ -58,14 +58,9 @@ export function installmentsDueInRange(f: Financing, from: Date, to: Date): Inst
 
 export type InstallmentStatus = "PAID" | "OVERDUE" | "DUE_SOON" | "UPCOMING";
 
-// Deliberately more precise than the overdue=true flag used elsewhere in
-// this app (Dashboard/Financing/Payments & Receipts), which only checks
-// whether a loan's very first due date has passed — on a loan that's
-// been paying normally, that's always true after month one, regardless
-// of whether the CURRENT installment is actually late. This page is
-// specifically about installment-level tracking, so it checks the
-// current installment's own due date instead. The two can legitimately
-// disagree on the same loan — flagged, not a bug.
+// The current (first not-yet-covered) installment's own due date decides
+// the status — the same rule as the server's `arrears` (a payment actually
+// missed), which drives "Overdue" on the Dashboard/Financing/Payments pages.
 export function installmentStatus(installment: Installment | null, now: Date = new Date()): InstallmentStatus {
   if (!installment) return "PAID";
   if (installment.dueDate < now) return "OVERDUE";

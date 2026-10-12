@@ -334,11 +334,7 @@ export function FinancingApplicationsPage() {
                   ) : (
                     result.data.map((f) => {
                       const downPayment = Number(f.sale.finalPrice) - Number(f.principalAmount);
-                      const isOverdue =
-                        (f.status === "APPROVED" || f.status === "ACTIVE") &&
-                        Number(f.outstandingBalance) > 0 &&
-                        !!f.firstPaymentDue &&
-                        new Date(f.firstPaymentDue) < new Date();
+                      const isOverdue = (f.arrears?.amount ?? 0) > 0; // a payment actually missed
                       const isBusy = busyId === f.id;
                       return (
                         <tr key={f.id} className="border-b border-border last:border-0 hover:bg-surface">
@@ -447,7 +443,7 @@ export function FinancingApplicationsPage() {
                       <div className="truncate font-medium text-ink">{customerDisplayName(f.sale.customer)}</div>
                       <div className="truncate text-xs text-muted">{vehicleDisplayName(f.sale.vehicle)}</div>
                     </div>
-                    <span className="shrink-0 font-medium text-danger">{formatCurrency(f.outstandingBalance)}</span>
+                    <span className="shrink-0 font-medium text-danger">{formatCurrency(f.arrears?.amount ?? 0)}</span>
                   </li>
                 ))}
               </ul>

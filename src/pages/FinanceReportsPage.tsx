@@ -188,7 +188,7 @@ export function FinanceReportsPage() {
 
   const thisMonthReceived = useMemo(() => (thisMonthReceipts ? thisMonthReceipts.reduce((s, r) => s + r.amount, 0) : null), [thisMonthReceipts]);
   const lastMonthReceived = useMemo(() => (lastMonthReceipts ? lastMonthReceipts.reduce((s, r) => s + r.amount, 0) : null), [lastMonthReceipts]);
-  const overdueTotal = useMemo(() => overdueLoans.reduce((s, f) => s + Number(f.outstandingBalance), 0), [overdueLoans]);
+  const overdueTotal = useMemo(() => overdueLoans.reduce((s, f) => s + (f.arrears?.amount ?? 0), 0), [overdueLoans]);
 
   const decidedLoans = useMemo(() => allLoans.filter((f) => f.status !== "PENDING" && f.status !== "REJECTED"), [allLoans]);
 
@@ -287,7 +287,7 @@ export function FinanceReportsPage() {
   }, [decidedLoans]);
 
   const topOverdueAccounts = useMemo(
-    () => [...overdueLoans].sort((a, b) => Number(b.outstandingBalance) - Number(a.outstandingBalance)).slice(0, 5),
+    () => [...overdueLoans].sort((a, b) => (b.arrears?.amount ?? 0) - (a.arrears?.amount ?? 0)).slice(0, 5),
     [overdueLoans]
   );
 
@@ -465,7 +465,7 @@ export function FinanceReportsPage() {
                     </div>
                     <div className="truncate text-xs text-muted">{f.financingNumber}</div>
                   </div>
-                  <span className="shrink-0 font-medium text-danger">{formatCurrency(f.outstandingBalance)}</span>
+                  <span className="shrink-0 font-medium text-danger">{formatCurrency(f.arrears?.amount ?? 0)}</span>
                 </li>
               ))}
             </ul>

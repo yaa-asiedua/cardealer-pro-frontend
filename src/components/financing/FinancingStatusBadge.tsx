@@ -2,8 +2,8 @@ import { FINANCING_STATUS_LABELS, FINANCING_STATUS_STYLES } from "../../lib/fina
 import type { FinancingStatus } from "../../types/financing";
 
 // "Overdue" isn't a stored FinancingStatus value (same situation as
-// Rentals' OVERDUE) — computed by the caller from firstPaymentDue/balance
-// and passed in as isOverdue, same pattern as RentalStatusBadge.
+// Rentals' OVERDUE) — computed by the caller from the server's `arrears` (a payment
+// actually missed) and passed in as isOverdue, same pattern as RentalStatusBadge.
 export function FinancingStatusBadge({ status, isOverdue }: { status: FinancingStatus; isOverdue?: boolean }) {
   if (isOverdue && (status === "APPROVED" || status === "ACTIVE")) {
     return <span className="inline-block whitespace-nowrap rounded-full bg-danger/10 px-2.5 py-1 text-xs font-semibold text-danger">Overdue</span>;

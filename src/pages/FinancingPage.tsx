@@ -472,11 +472,7 @@ function FinancingLoansTab({
                 </tr>
               ) : (
                 result.data.map((f) => {
-                  const isOverdue =
-                    (f.status === "APPROVED" || f.status === "ACTIVE") &&
-                    Number(f.outstandingBalance) > 0 &&
-                    !!f.firstPaymentDue &&
-                    new Date(f.firstPaymentDue) < new Date();
+                  const isOverdue = (f.arrears?.amount ?? 0) > 0; // a payment actually missed
                   const isBusy = busyId === f.id;
                   return (
                     <tr key={f.id} className="border-b border-border last:border-0 hover:bg-surface">

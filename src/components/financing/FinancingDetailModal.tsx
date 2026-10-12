@@ -8,6 +8,7 @@ import { customerDisplayName } from "../../types/customer";
 import { vehicleDisplayName } from "../../lib/vehicle-helpers";
 import { paidSoFar } from "../../types/financing";
 import { FinancingStatusBadge } from "./FinancingStatusBadge";
+import { RepaymentRisk } from "./RepaymentRisk";
 import type { Financing } from "../../types/financing";
 import { ModalOverlay } from "../ModalOverlay";
 
@@ -28,12 +29,7 @@ export function FinancingDetailModal({ financingId, onClose }: { financingId: st
     };
   }, [financingId]);
 
-  const isOverdue =
-    !!financing &&
-    (financing.status === "APPROVED" || financing.status === "ACTIVE") &&
-    Number(financing.outstandingBalance) > 0 &&
-    !!financing.firstPaymentDue &&
-    new Date(financing.firstPaymentDue) < new Date();
+  const isOverdue = !!financing && (financing.arrears?.amount ?? 0) > 0; // a payment actually missed
 
   return (
     <ModalOverlay onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-8">
@@ -73,6 +69,11 @@ export function FinancingDetailModal({ financingId, onClose }: { financingId: st
                   {financing.sale.vehicle.stockNumber} · {financing.sale.vehicle.registrationNo ?? "No registration on file"}
                 </p>
               </DetailSection>
+
+              {/* Most useful while deciding, and while the loan is being repaid */}
+              {(financing.status === "PENDING" || financing.status === "APPROVED" || financing.status === "ACTIVE") && (
+                <RepaymentRisk financingId={financing.id} />
+              )}
 
               <DetailSection title="Loan terms">
                 <dl className="grid grid-cols-2 gap-y-1 text-sm">
