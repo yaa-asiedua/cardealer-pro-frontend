@@ -185,6 +185,7 @@ function TransfersTab({
   const [completeTarget, setCompleteTarget] = useState<Transfer | null>(null);
   const [feeAmount, setFeeAmount] = useState("");
   const [completionNotes, setCompletionNotes] = useState("");
+  const [newRegistrationNo, setNewRegistrationNo] = useState("");
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 350);
@@ -246,15 +247,21 @@ function TransfersTab({
 
   async function handleComplete() {
     if (!completeTarget) return;
+    const firstRegistration = completeTarget.isFirstRegistration;
+    if (firstRegistration && !newRegistrationNo.trim()) {
+      throw new Error("Enter the registration number issued for this vehicle");
+    }
     try {
       await api.post(`/transfers/${completeTarget.id}/complete`, {
+        registrationNo: firstRegistration ? newRegistrationNo.trim() : undefined,
         feeAmount: feeAmount ? Number(feeAmount) : undefined,
         notes: completionNotes || undefined,
       });
-      showToast("Transfer completed");
+      showToast(firstRegistration ? "Registration completed and number saved to the vehicle" : "Transfer completed");
       setCompleteTarget(null);
       setFeeAmount("");
       setCompletionNotes("");
+      setNewRegistrationNo("");
       loadList();
       onChanged();
     } catch (err) {
@@ -373,14 +380,21 @@ function TransfersTab({
                         </button>
                       </td>
                       <td className="px-4 py-3 text-ink">{customerDisplayName(t.customer)}</td>
-                      <td className="px-4 py-3 text-ink">{vehicleDisplayName(t.vehicle)}</td>
+                      <td className="px-4 py-3 text-ink">
+                        {vehicleDisplayName(t.vehicle)}
+                        {t.isFirstRegistration && (
+                          <span className="mt-0.5 block w-fit rounded-full bg-warning/10 px-2 py-0.5 text-[11px] font-medium text-warning">
+                            First registration
+                          </span>
+                        )}
+                      </td>
                       <td className="px-4 py-3 text-xs text-muted">{formatDate(t.createdAt)}</td>
                       <td className="px-4 py-3 text-right tabular-nums text-ink">{t.feeAmount ? formatCurrency(t.feeAmount) : "—"}</td>
                       <td className="px-4 py-3">
                         <TransferStatusBadge status={t.status} />
                       </td>
                       <td className="px-4 py-3 text-right">
-                        {t.status === "PENDING" && !t.oldLogbookCollectedAt && (
+                        {t.status === "PENDING" && !t.isFirstRegistration && !t.oldLogbookCollectedAt && (
                           <button
                             type="button"
                             disabled={isBusy}
@@ -390,14 +404,14 @@ function TransfersTab({
                             Collect Documents
                           </button>
                         )}
-                        {t.status === "PENDING" && t.oldLogbookCollectedAt && (
+                        {t.status === "PENDING" && (t.isFirstRegistration || t.oldLogbookCollectedAt) && (
                           <button type="button" onClick={() => setSubmitTarget(t)} className="text-xs font-medium text-action hover:underline">
                             Submit to Registry
                           </button>
                         )}
                         {t.status === "SUBMITTED_TO_REGISTRY" && (
                           <button type="button" onClick={() => setCompleteTarget(t)} className="text-xs font-medium text-success hover:underline">
-                            Complete Transfer
+                            {t.isFirstRegistration ? "Complete Registration" : "Complete Transfer"}
                           </button>
                         )}
                       </td>
@@ -455,11 +469,25 @@ function TransfersTab({
 
       {completeTarget && (
         <ConfirmDialog
-          title="Complete this transfer?"
-          description={`${completeTarget.sale.saleNumber} (${vehicleDisplayName(completeTarget.vehicle)}) will be marked as completed.`}
-          confirmLabel="Complete Transfer"
+          title={completeTarget.isFirstRegistration ? "Complete first registration?" : "Complete this transfer?"}
+          description={
+            completeTarget.isFirstRegistration
+              ? `${completeTarget.sale.saleNumber} (${vehicleDisplayName(completeTarget.vehicle)}) was never registered. Enter the registration number the registry issued; it will be saved to the vehicle.`
+              : `${completeTarget.sale.saleNumber} (${vehicleDisplayName(completeTarget.vehicle)}) will be marked as completed.`
+          }
+          confirmLabel={completeTarget.isFirstRegistration ? "Complete Registration" : "Complete Transfer"}
           extraContent={
             <div className="flex flex-col gap-2">
+              {completeTarget.isFirstRegistration && (
+                <input
+                  required
+                  aria-label="New registration number"
+                  placeholder="New registration number (e.g. GR 1234-26)"
+                  value={newRegistrationNo}
+                  onChange={(e) => setNewRegistrationNo(e.target.value)}
+                  className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-ink outline-none focus:border-action focus:ring-1 focus:ring-action"
+                />
+              )}
               <input
                 type="number" inputMode="decimal"
                 min={0}
@@ -483,6 +511,7 @@ function TransfersTab({
             setCompleteTarget(null);
             setFeeAmount("");
             setCompletionNotes("");
+            setNewRegistrationNo("");
           }}
         />
       )}

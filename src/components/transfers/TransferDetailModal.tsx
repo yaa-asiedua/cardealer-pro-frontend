@@ -65,14 +65,23 @@ export function TransferDetailModal({ transferId, onClose }: { transferId: strin
               <DetailSection title="Vehicle">
                 <p className="text-sm text-ink">{vehicleDisplayName(transfer.vehicle)}</p>
                 <p className="text-xs text-muted">
-                  {transfer.vehicle.stockNumber} · {transfer.vehicle.registrationNo ?? "No registration on file"}
+                  {transfer.vehicle.stockNumber} · {transfer.vehicle.registrationNo ?? "Not yet registered"}
                 </p>
+                {transfer.isFirstRegistration && (
+                  <p className="mt-1 text-xs font-medium text-warning">First registration: no previous owner's logbook</p>
+                )}
               </DetailSection>
 
               <DetailSection title="Progress">
                 <dl className="grid grid-cols-2 gap-y-1 text-sm">
                   <dt className="text-muted">Old logbook collected</dt>
-                  <dd className="text-right text-ink">{transfer.oldLogbookCollectedAt ? formatDateTime(transfer.oldLogbookCollectedAt) : "—"}</dd>
+                  <dd className="text-right text-ink">
+                    {transfer.oldLogbookCollectedAt
+                      ? formatDateTime(transfer.oldLogbookCollectedAt)
+                      : transfer.isFirstRegistration
+                        ? "Not needed (first registration)"
+                        : "—"}
+                  </dd>
                   <dt className="text-muted">Submitted to registry</dt>
                   <dd className="text-right text-ink">{transfer.submittedToRegistryAt ? formatDateTime(transfer.submittedToRegistryAt) : "—"}</dd>
                   <dt className="text-muted">Registry reference</dt>

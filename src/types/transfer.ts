@@ -21,6 +21,10 @@ export interface Transfer {
   sale: { id: string; saleNumber: string };
   customer: Customer;
   vehicle: Vehicle;
+  // The sold vehicle was never registered (no previous owner's logbook),
+  // so this is a first registration with the registry, not a transfer.
+  // Derived by the backend.
+  isFirstRegistration: boolean;
 }
 
 export interface TransferListResult {

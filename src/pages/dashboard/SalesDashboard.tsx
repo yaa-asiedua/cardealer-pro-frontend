@@ -96,7 +96,7 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
       .catch(() => setRecentSales(null));
 
     api
-      .get<VehicleListResult>("/vehicles?status=AVAILABLE&pageSize=5")
+      .get<VehicleListResult>("/vehicles?status=AVAILABLE&forSale=true&pageSize=5")
       .then((res) => setAvailableVehicles(res.data))
       .catch(() => setAvailableVehicles([]));
 

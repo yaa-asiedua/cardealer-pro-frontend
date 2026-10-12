@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FormEvent, ReactNode } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
   ArrowLeftRight,
@@ -29,6 +29,7 @@ import { customerDisplayName } from "../types/customer";
 import type { Customer, CustomerListResult } from "../types/customer";
 import type { CreateSaleInput } from "../types/sale";
 import type { Vehicle, VehicleListResult } from "../types/vehicle";
+import { SimilarVehicles } from "../components/sales/SimilarVehicles";
 
 interface SalespersonOption {
   id: string;
@@ -90,7 +91,7 @@ export function SaleFormPage() {
   }, [isAdmin]);
 
   const fetchVehicles = useCallback(async (query: string) => {
-    const res = await api.get<VehicleListResult>(`/vehicles?status=AVAILABLE&search=${encodeURIComponent(query)}&pageSize=20`);
+    const res = await api.get<VehicleListResult>(`/vehicles?status=AVAILABLE&forSale=true&search=${encodeURIComponent(query)}&pageSize=20`);
     // A sale needs a selling price to prefill — a rental-only vehicle (no
     // sellingPrice) can't be sold through this form.
     return res.data.filter((v) => v.sellingPrice);
@@ -105,6 +106,16 @@ export function SaleFormPage() {
     setVehicle(v);
     if (v.sellingPrice) setSellingPrice(v.sellingPrice);
   }
+
+  // Available Vehicles' "Sell" passes the car along in router state, so the
+  // salesperson doesn't have to search for it again here.
+  const location = useLocation();
+  useEffect(() => {
+    const handed = (location.state as { vehicle?: Vehicle } | null)?.vehicle;
+    if (handed) handleSelectVehicle(handed);
+    // only on arrival
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function handleCreateCustomer() {
     setError(null);
@@ -427,45 +438,50 @@ export function SaleFormPage() {
                   <Car size={14} className="text-action" /> Vehicle
                 </h3>
                 {vehicle ? (
-                  <div className="flex items-center gap-3 rounded-lg border border-border p-3">
-                    <div className="flex h-16 w-20 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-surface text-muted">
-                      {vehicle.images?.[0] ? (
-                        <img src={vehicle.images[0].fileUrl} alt="" className="h-full w-full object-cover" />
-                      ) : (
-                        <Car size={20} />
-                      )}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-semibold text-ink">{vehicleDisplayName(vehicle)}</span>
-                        <StatusBadge status={vehicle.status} />
-                      </div>
-                      <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-muted">
-                        {vehicle.vehicleType && <span>{vehicle.vehicleType}</span>}
-                        {vehicle.fuelType && (
-                          <span className="flex items-center gap-1">
-                            <Fuel size={12} /> {vehicle.fuelType}
-                          </span>
-                        )}
-                        {vehicle.mileage != null && (
-                          <span className="flex items-center gap-1">
-                            <Gauge size={12} /> {vehicle.mileage.toLocaleString()} km
-                          </span>
+                  <>
+                    <div className="flex items-center gap-3 rounded-lg border border-border p-3">
+                      <div className="flex h-16 w-20 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-surface text-muted">
+                        {vehicle.images?.[0] ? (
+                          <img src={vehicle.images[0].fileUrl} alt="" className="h-full w-full object-cover" />
+                        ) : (
+                          <Car size={20} />
                         )}
                       </div>
-                      <div className="mt-1 text-xs text-muted">
-                        Stock: {vehicle.stockNumber} · VIN: {vehicle.vin}
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-semibold text-ink">{vehicleDisplayName(vehicle)}</span>
+                          <StatusBadge status={vehicle.status} />
+                        </div>
+                        <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-muted">
+                          {vehicle.vehicleType && <span>{vehicle.vehicleType}</span>}
+                          {vehicle.fuelType && (
+                            <span className="flex items-center gap-1">
+                              <Fuel size={12} /> {vehicle.fuelType}
+                            </span>
+                          )}
+                          {vehicle.mileage != null && (
+                            <span className="flex items-center gap-1">
+                              <Gauge size={12} /> {vehicle.mileage.toLocaleString()} km
+                            </span>
+                          )}
+                        </div>
+                        <div className="mt-1 text-xs text-muted">
+                          Stock: {vehicle.stockNumber} · VIN: {vehicle.vin}
+                        </div>
+                        <div className="mt-1 text-xs font-semibold text-ink">{formatCurrency(vehicle.sellingPrice ?? 0)}</div>
                       </div>
-                      <div className="mt-1 text-xs font-semibold text-ink">{formatCurrency(vehicle.sellingPrice ?? 0)}</div>
+                      <button
+                        type="button"
+                        onClick={() => setVehicle(null)}
+                        className="shrink-0 rounded-lg border border-border px-2.5 py-1 text-xs font-medium text-ink hover:bg-surface"
+                      >
+                        Change
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setVehicle(null)}
-                      className="shrink-0 rounded-lg border border-border px-2.5 py-1 text-xs font-medium text-ink hover:bg-surface"
-                    >
-                      Change
-                    </button>
-                  </div>
+                    <div className="mt-3">
+                      <SimilarVehicles vehicleId={vehicle.id} pickLabel="Use instead" onPick={handleSelectVehicle} />
+                    </div>
+                  </>
                 ) : (
                   <SearchSelect
                     placeholder="Search available vehicles by make, model, VIN…"

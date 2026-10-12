@@ -24,9 +24,14 @@ export const PAYMENT_METHOD_LABELS: Record<string, string> = {
   UNSPECIFIED: "Unspecified",
 };
 
+// A rental paid in parts lists every method used, joined with "+"
+// (e.g. "MOBILE_MONEY+CASH" → "Mobile Money + Cash").
 export function paymentMethodLabel(method: string | null): string {
   if (!method) return "—";
-  return PAYMENT_METHOD_LABELS[method] ?? method;
+  return method
+    .split("+")
+    .map((m) => PAYMENT_METHOD_LABELS[m] ?? m)
+    .join(" + ");
 }
 
 // Fixed, distinct palette for the revenue-by-category charts — independent

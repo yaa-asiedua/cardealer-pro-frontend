@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AlertCircle, Car, LayoutGrid, List, Loader2, RotateCcw, Search, SlidersHorizontal } from "lucide-react";
+import { AlertCircle, Car, LayoutGrid, List, Loader2, RotateCcw, Search, SlidersHorizontal, Sparkles, X } from "lucide-react";
+import { ModalOverlay } from "../components/ModalOverlay";
 import { StatusBadge } from "../components/StatusBadge";
+import { SimilarVehicles } from "../components/sales/SimilarVehicles";
 import { api, ApiError } from "../lib/api-client";
 import { formatCurrency } from "../lib/format";
 import { FUEL_TYPE_OPTIONS, TRANSMISSION_OPTIONS, vehicleDisplayName } from "../lib/vehicle-helpers";
@@ -58,7 +60,7 @@ export function AvailableVehiclesPage() {
   const loadList = useCallback(() => {
     setIsLoading(true);
     setError(null);
-    const params = new URLSearchParams({ page: String(page), pageSize: "12", status: "AVAILABLE", sortBy, sortDir });
+    const params = new URLSearchParams({ page: String(page), pageSize: "12", status: "AVAILABLE", forSale: "true", sortBy, sortDir });
     if (debouncedSearch) params.set("search", debouncedSearch);
     if (make) params.set("make", make);
     if (model) params.set("model", model);
@@ -83,6 +85,7 @@ export function AvailableVehiclesPage() {
   // panel took a whole screen before the first vehicle (mobile audit).
   // From sm up the panel is always open.
   const [showFilters, setShowFilters] = useState(false);
+  const [similarFor, setSimilarFor] = useState<Vehicle | null>(null);
   const activeFilterCount = [make, model, vehicleType, transmission, fuelType, yearFrom, yearTo, priceMin, priceMax].filter(Boolean).length;
   const advCls = showFilters ? "" : "hidden sm:block";
 
@@ -292,13 +295,22 @@ export function AvailableVehiclesPage() {
                       {vehicle.sellingPrice ? formatCurrency(Number(vehicle.sellingPrice)) : "—"}
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => navigate("/sales/new")}
-                    className={`rounded-lg bg-action px-3 py-2 text-sm font-semibold text-white hover:bg-primary ${view === "grid" ? "w-full" : "shrink-0"}`}
-                  >
-                    Sell
-                  </button>
+                  <div className={`flex gap-2 ${view === "grid" ? "" : "shrink-0"}`}>
+                    <button
+                      type="button"
+                      onClick={() => navigate("/sales/new", { state: { vehicle } })}
+                      className={`rounded-lg bg-action px-3 py-2 text-sm font-semibold text-white hover:bg-primary ${view === "grid" ? "flex-1" : ""}`}
+                    >
+                      Sell
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSimilarFor(vehicle)}
+                      className="flex items-center gap-1 rounded-lg border border-border px-3 py-2 text-sm font-medium text-ink hover:bg-surface"
+                    >
+                      <Sparkles size={14} className="text-action" /> Similar
+                    </button>
+                  </div>
                 </div>
               </div>
             );
@@ -331,6 +343,26 @@ export function AvailableVehiclesPage() {
             </button>
           </div>
         </div>
+      )}
+      {similarFor && (
+        <ModalOverlay onClose={() => setSimilarFor(null)} className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-8">
+          <div className="flex max-h-full w-full max-w-2xl flex-col rounded-xl border border-border bg-card shadow-lg">
+            <div className="flex items-center justify-between border-b border-border px-6 py-4">
+              <h2 className="text-base font-semibold text-ink">Alternatives to {vehicleDisplayName(similarFor)}</h2>
+              <button type="button" onClick={() => setSimilarFor(null)} className="text-muted hover:text-ink" aria-label="Close">
+                <X size={18} />
+              </button>
+            </div>
+            <div className="overflow-y-auto p-6">
+              <SimilarVehicles
+                vehicleId={similarFor.id}
+                limit={4}
+                pickLabel="Sell this one"
+                onPick={(v) => navigate("/sales/new", { state: { vehicle: v } })}
+              />
+            </div>
+          </div>
+        </ModalOverlay>
       )}
     </div>
   );
