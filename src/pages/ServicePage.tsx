@@ -20,6 +20,7 @@ import { CompleteServiceJobModal } from "../components/service/CompleteServiceJo
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { PartRequestStatusBadge, ServiceJobStatusBadge } from "../components/service/ServiceBadges";
 import { ServiceJobFormModal } from "../components/service/ServiceJobFormModal";
+import { ServiceDueSuggestions, type DueVehicle } from "../components/service/ServiceDueSuggestions";
 import { useToast } from "../context/ToastContext";
 import { api, ApiError } from "../lib/api-client";
 import { useChartTheme } from "../lib/chart-theme";
@@ -92,6 +93,7 @@ export function ServicePage() {
   const [typeBreakdown, setTypeBreakdown] = useState<{ name: string; count: number }[]>([]);
 
   const [showCreateJob, setShowCreateJob] = useState(false);
+  const [assignVehicle, setAssignVehicle] = useState<DueVehicle | null>(null);
 
   // Both charts bucket from the same single fetch (last 30 days by
   // creation date, capped at 100 jobs) — same tradeoff as the Inventory
@@ -351,6 +353,16 @@ export function ServicePage() {
         </Link>
       </div>
 
+      <div className="mt-6">
+        <ServiceDueSuggestions
+          refreshKey={refreshKey}
+          onAssign={(v) => {
+            setAssignVehicle(v);
+            setShowCreateJob(true);
+          }}
+        />
+      </div>
+
       <div className="mt-6 flex gap-1 overflow-x-auto shadow-[inset_0_-1px_0_rgb(var(--color-border))] [mask-image:linear-gradient(to_right,#000_80%,transparent)] sm:[mask-image:none]">
         {(
           [
@@ -428,10 +440,15 @@ export function ServicePage() {
 
       {showCreateJob && (
         <ServiceJobFormModal
-          onClose={() => setShowCreateJob(false)}
+          initialVehicle={assignVehicle ?? undefined}
+          onClose={() => {
+            setShowCreateJob(false);
+            setAssignVehicle(null);
+          }}
           onCreated={() => {
             showToast("Service job created");
             setShowCreateJob(false);
+            setAssignVehicle(null);
             refreshAll();
           }}
         />

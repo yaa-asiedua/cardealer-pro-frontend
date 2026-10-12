@@ -8,6 +8,7 @@ import { useChartTheme } from "../lib/chart-theme";
 import { formatDate } from "../lib/format";
 import { vehicleDisplayName } from "../lib/vehicle-helpers";
 import type { ServiceJob, ServiceJobListResult } from "../types/service";
+import { ServiceDueSuggestions } from "../components/service/ServiceDueSuggestions";
 
 function monthBounds(monthsAgo: number): { start: Date; end: Date } {
   const now = new Date();
@@ -227,6 +228,11 @@ export function MaintenanceSchedulePage() {
           icon={AlertTriangle}
           tone={overdueCount > 0 ? "danger" : "default"}
         />
+      </div>
+
+      {/* Reminders below are dates a mechanic set; these are the system's own suggestions */}
+      <div className="mt-6">
+        <ServiceDueSuggestions limit={6} />
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-3">

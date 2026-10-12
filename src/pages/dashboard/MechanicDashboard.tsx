@@ -5,6 +5,7 @@ import { Calendar, CheckCircle2, ClipboardList, History, Hourglass, PlayCircle, 
 import { ConfirmDialog } from "../../components/ConfirmDialog";
 import { KpiCard } from "../../components/dashboard/KpiCard";
 import { SectionCard } from "../../components/dashboard/SectionCard";
+import { ServiceDueSuggestions } from "../../components/service/ServiceDueSuggestions";
 import { ServiceJobStatusBadge } from "../../components/service/ServiceBadges";
 import { useToast } from "../../context/ToastContext";
 import { api, ApiError } from "../../lib/api-client";
@@ -260,6 +261,10 @@ export function MechanicDashboard({ data }: { data: MechanicDashboardData }) {
             </ul>
           )}
         </SectionCard>
+      </div>
+
+      <div className="mt-6">
+        <ServiceDueSuggestions limit={4} />
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">

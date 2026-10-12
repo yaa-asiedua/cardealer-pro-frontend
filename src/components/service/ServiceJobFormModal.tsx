@@ -16,6 +16,9 @@ interface MechanicOption {
 interface ServiceJobFormModalProps {
   onClose: () => void;
   onCreated: () => void;
+  // Pre-selects a car (from a service-due suggestion). The picker only
+  // reads id/year/make/model/stockNumber, so a partial vehicle is enough.
+  initialVehicle?: Pick<Vehicle, "id" | "year" | "make" | "model" | "stockNumber">;
 }
 
 // Reconciled against admin_pages/"add- service page.jpeg": that mockup's
@@ -29,9 +32,9 @@ interface ServiceJobFormModalProps {
 // performed and what it took often aren't known until a mechanic has
 // diagnosed and done the work, so that capability lives on the new
 // Complete Job dialog in ServicePage.tsx, not here.
-export function ServiceJobFormModal({ onClose, onCreated }: ServiceJobFormModalProps) {
+export function ServiceJobFormModal({ onClose, onCreated, initialVehicle }: ServiceJobFormModalProps) {
   const { showToast } = useToast();
-  const [vehicle, setVehicle] = useState<Vehicle | null>(null);
+  const [vehicle, setVehicle] = useState<Vehicle | null>((initialVehicle as Vehicle | undefined) ?? null);
   const [mechanicId, setMechanicId] = useState("");
   const [serviceTypeId, setServiceTypeId] = useState("");
   const [issueDescription, setIssueDescription] = useState("");
