@@ -2,6 +2,7 @@ import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis
 import { Link } from "react-router-dom";
 import { Boxes, Handshake, Landmark, Repeat, Users, Wrench } from "lucide-react";
 import { AlertBanner } from "../../components/dashboard/AlertBanner";
+import { AnomalyFlags } from "../../components/dashboard/AnomalyFlags";
 import { KpiCard } from "../../components/dashboard/KpiCard";
 import { SectionCard } from "../../components/dashboard/SectionCard";
 import { useChartTheme } from "../../lib/chart-theme";
@@ -70,6 +71,10 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
           tone={data.lowInventory.alert ? "danger" : "success"}
         />
         <KpiCard label="Active staff" value={String(totalStaff)} icon={Users} />
+      </div>
+
+      <div className="mt-6">
+        <AnomalyFlags />
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
