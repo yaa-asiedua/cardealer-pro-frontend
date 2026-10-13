@@ -22,6 +22,7 @@ import {
 } from "../lib/customer-helpers";
 import { formatDateTime } from "../lib/format";
 import type { Customer, CustomerStatus, CustomerType } from "../types/customer";
+import { IdScanButton, type IdScanFields } from "../components/customers/IdScanButton";
 
 interface SalespersonOption {
   id: string;
@@ -179,6 +180,23 @@ export function CustomerFormPage() {
     setValues((prev) => ({ ...prev, [key]: value }));
   }
 
+  // Fills only what the scan actually read; returns how many fields it filled.
+  // A licence's number goes in as the ID (this form has no licence fields).
+  function applyScan(f: IdScanFields): number {
+    const found: Partial<FormState> = {
+      firstName: f.firstName ?? undefined,
+      lastName: f.lastName ?? undefined,
+      gender: f.gender && GENDER_OPTIONS.includes(f.gender) ? f.gender : undefined,
+      dateOfBirth: f.dateOfBirth ?? undefined,
+      idType: f.idType && ID_TYPE_OPTIONS.includes(f.idType) ? f.idType : undefined,
+      idNumber: f.idNumber ?? f.driverLicenseNo ?? undefined,
+      nationality: f.nationality ?? undefined,
+    };
+    const filled = Object.fromEntries(Object.entries(found).filter(([, v]) => !!v)) as Partial<FormState>;
+    setValues((prev) => ({ ...prev, ...filled }));
+    return Object.keys(filled).length;
+  }
+
   const handlePhotoSelected = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -261,6 +279,9 @@ export function CustomerFormPage() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="flex flex-col gap-5 lg:col-span-2">
           <FormCard title="1. Personal Information" subtitle="Basic details about the customer.">
+            <div className="mb-4">
+              <IdScanButton onScanned={applyScan} />
+            </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <Field label="First Name" required>
                 <input required value={values.firstName} onChange={(e) => update("firstName", e.target.value)} className={inputCls} />

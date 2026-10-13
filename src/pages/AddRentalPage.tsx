@@ -26,6 +26,7 @@ import { customerDisplayName } from "../types/customer";
 import type { Customer, CustomerListResult } from "../types/customer";
 import type { CreateRentalInput } from "../types/rental";
 import type { Vehicle, VehicleListResult } from "../types/vehicle";
+import { IdScanButton, type IdScanFields } from "../components/customers/IdScanButton";
 
 interface RentalSalespersonOption {
   id: string;
@@ -79,6 +80,19 @@ export function AddRentalPage() {
     licenseExpiry: "",
   });
   const [isCreatingCustomer, setIsCreatingCustomer] = useState(false);
+
+  // Fills only what the scan actually read; returns how many fields it filled.
+  function applyScanToNewCustomer(f: IdScanFields): number {
+    const found = {
+      firstName: f.firstName,
+      lastName: f.lastName,
+      driverLicenseNo: f.driverLicenseNo,
+      licenseExpiry: f.licenseExpiry,
+    };
+    const filled = Object.fromEntries(Object.entries(found).filter(([, v]) => !!v)) as Partial<typeof newCustomer>;
+    setNewCustomer((c) => ({ ...c, ...filled }));
+    return Object.keys(filled).length;
+  }
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
 
   const [vehicle, setVehicle] = useState<Vehicle | null>(null);
@@ -382,6 +396,9 @@ export function AddRentalPage() {
                     />
                   ) : (
                     <div className="grid grid-cols-2 gap-2">
+                      <div className="col-span-2">
+                        <IdScanButton label="Scan driver's licence" onScanned={applyScanToNewCustomer} />
+                      </div>
                       <input
                         placeholder="First name"
                         value={newCustomer.firstName}
